@@ -1,0 +1,17 @@
+# CMake
+/build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# SFML submoduł (jeśli budujesz go razem)
+external/SFML/build/
+
+# CLion / JetBrains
+.idea/
+*.iml
+
+# Systemowe
+.DS_Store
+Thumbs.db
