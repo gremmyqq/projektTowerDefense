@@ -5,23 +5,24 @@
 #ifndef ENEMY_H
 #define ENEMY_H
 
-#include <vector>
 #include <SFML/Graphics.hpp>
+#include <vector>
 
 class Enemy {
 public:
-    Enemy(const std::vector<sf::Vector2f>& path, float speed, int maxHealth);
+    Enemy(const std::vector<sf::Vector2f>& path);
+    virtual ~Enemy() = default;
 
-    void update(float deltaTime);
-    void draw(sf::RenderWindow& window) const;
+    virtual void update(float deltaTime) = 0;
+    virtual void draw(sf::RenderWindow& window) const = 0;
 
-    void takeDamage(int damage);
-    bool isDead() const;
-    bool reachedEnd() const;
+    virtual void takeDamage(int damage);
+    virtual bool isDead() const;
+    virtual bool reachedEnd() const;
 
     sf::Vector2f getPosition() const;
 
-private:
+protected:
     std::vector<sf::Vector2f> path;
     size_t currentTargetIndex;
 
@@ -29,8 +30,6 @@ private:
     float speed;
     int health;
     int maxHealth;
-
-    sf::CircleShape shape;
 
     void moveTowardsTarget(float deltaTime);
 };
