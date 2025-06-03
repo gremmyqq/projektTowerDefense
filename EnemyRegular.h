@@ -12,7 +12,7 @@ public:
     EnemyRegular(const std::vector<sf::Vector2f>& path);
 
     void update(float deltaTime) override;
-    void draw(sf::RenderWindow& window) const override;
+    void draw(sf::RenderWindow& window) override;
 
 private:
     sf::CircleShape shape;

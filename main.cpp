@@ -1,17 +1,21 @@
 #include <iostream>
 #include <vector>
+#include <memory>              // ← potrzebne do std::unique_ptr
 #include "Enemy.h"
 #include <SFML/Graphics.hpp>
 
-vector<Vector2f>
-
 int main()
 {
-    std::cout<<"Test";
-    std::vector<std::unique_ptr<Enemy>> enemies;
-    enemies.push_back(std::make_unique<BasicEnemy>(path));
+    std::cout << "KURWAAAAAAQAAAAAAAAAA";
 
+    // Przykład poprawnej deklaracji wektora pozycji
+    std::vector<sf::Vector2f> positions;
+
+    // Przykład listy wrogów
+    std::vector<std::unique_ptr<Enemy>> enemies;
+
+    // Zakładam, że masz coś w stylu:
+    // std::vector<sf::Vector2f> path;
+    // enemies.push_back(std::make_unique<BasicEnemy>(path));
+    return 0;
 }
-//
-// Created by CP on 27.05.2025.
-//

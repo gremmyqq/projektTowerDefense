@@ -14,7 +14,7 @@ public:
     virtual ~Enemy() = default;
 
     virtual void update(float deltaTime) = 0;
-    virtual void draw(sf::RenderWindow& window) const = 0;
+    virtual void draw(sf::RenderWindow& window) = 0;
 
     virtual void takeDamage(int damage);
     virtual bool isDead() const;

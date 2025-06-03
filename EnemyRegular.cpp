@@ -12,7 +12,8 @@ EnemyRegular::EnemyRegular(const std::vector<sf::Vector2f>& path)
     speed=10;
     shape.setRadius(10.f);
     shape.setFillColor(sf::Color::Red);
-    shape.setOrigin(shape.getRadius(), shape.getRadius());
+    shape.setOrigin(sf::Vector2f(shape.getRadius(), shape.getRadius()));
+
 }
 
 void EnemyRegular::update(float deltaTime) {
@@ -21,7 +22,7 @@ void EnemyRegular::update(float deltaTime) {
     }
 }
 
-void EnemyRegular::draw(sf::RenderWindow& window) const {
+void EnemyRegular::draw(sf::RenderWindow& window) {
     shape.setPosition(position);
     window.draw(shape);
 }
