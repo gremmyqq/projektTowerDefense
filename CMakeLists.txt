@@ -4,7 +4,7 @@ project(TowerDefense)
 set(CMAKE_CXX_STANDARD 17)
 
 # Wskaż SFML
-set(SFML_DIR "C:/Libraries/SFML/lib/cmake/SFML")
+set(SFML_DIR "C:/Users/CP/CLionProjects/projektTowerDefense/external/SFML/lib/cmake/SFML")
 
 # Znajdź SFML
 find_package(SFML 2.5 REQUIRED COMPONENTS graphics window system)

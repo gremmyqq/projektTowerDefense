@@ -6,7 +6,7 @@
 
 int main()
 {
-    std::cout << "KURWAAAAAAQAAAAAAAAAA";
+    std::cout << "Test";
 
     // Przykład poprawnej deklaracji wektora pozycji
     std::vector<sf::Vector2f> positions;
