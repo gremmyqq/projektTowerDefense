@@ -1,17 +1,33 @@
-# CMake
+# CMake build
 /build/
-CMakeFiles/
-CMakeCache.txt
+/cmake-build-*/
+/CMakeFiles/
+/CMakeCache.txt
 cmake_install.cmake
 Makefile
 
-# SFML submoduł (jeśli budujesz go razem)
+# CMake project files
+CMakeLists.txt.user
+*.pro
+*.pro.user
+
+# SFML submodule build (jeśli występuje)
 external/SFML/build/
 
-# CLion / JetBrains
+# CLion / JetBrains IDE
 .idea/
 *.iml
 
-# Systemowe
+# Windows system files
 .DS_Store
 Thumbs.db
+desktop.ini
+
+# Wygenerowane pliki wykonywalne
+*.exe
+*.out
+*.app
+
+# Backup / log / inne tymczasowe
+*.log
+*.tmp
