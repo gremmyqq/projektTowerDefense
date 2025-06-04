@@ -22,6 +22,9 @@ public:
 
     sf::Vector2f getPosition() const;
 
+    void setPosition(sf::Vector2f newPos);
+
+
 protected:
     std::vector<sf::Vector2f> path;
     size_t currentTargetIndex;

@@ -28,6 +28,10 @@ sf::Vector2f Enemy::getPosition() const {
     return position;
 }
 
+void Enemy::setPosition(sf::Vector2f newPos) {
+    position = newPos;
+}
+
 void Enemy::moveTowardsTarget(float deltaTime) {
     if (currentTargetIndex >= path.size()) return;
 

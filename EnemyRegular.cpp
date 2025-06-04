@@ -9,7 +9,7 @@ EnemyRegular::EnemyRegular(const std::vector<sf::Vector2f>& path)
 {
     maxHealth=100;
     health=maxHealth;
-    speed=10;
+    speed=100;
     shape.setRadius(10.f);
     shape.setFillColor(sf::Color::Red);
     shape.setOrigin(sf::Vector2f(shape.getRadius(), shape.getRadius()));
