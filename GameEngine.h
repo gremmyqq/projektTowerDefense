@@ -3,28 +3,40 @@
 
 #include <SFML/Graphics.hpp>
 #include <memory>
+#include <vector>
 #include "EnemyRegular.h"
 #include "Tower.h"
+#include "Hero.h"
+#include "Castle.h"
 
 class GameEngine {
 public:
-    GameEngine(sf::RenderWindow& window);
+    explicit GameEngine(sf::RenderWindow& window);
     void run();
 
 private:
     sf::RenderWindow& window;
 
+    // Komponenty gry
     std::vector<std::unique_ptr<Enemy>> enemies;
     std::vector<Tower> towers;
+    std::unique_ptr<Hero> hero;
+    Castle castle;
+
+    // Ścieżka dla wrogów
     std::vector<sf::Vector2f> path;
 
+    // Tekstury
+    sf::Texture heroTexture;
+
+    // Timery
     float spawnTimer;
     float spawnInterval;
 
+    // Metody pomocnicze
     void handleEvents();
     void update(float deltaTime);
     void render();
-
     void spawnEnemy();
 };
 

@@ -11,7 +11,7 @@ Tower::Tower(const sf::Vector2f& position)
     shape.setPosition(position);
 }
 
-void Tower::update(float deltaTime, std::vector<std::unique_ptr<Enemy> > enemies) {
+void Tower::update(float deltaTime) {
     timeSinceLastAttack += deltaTime;
 }
 

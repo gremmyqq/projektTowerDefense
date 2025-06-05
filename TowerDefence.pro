@@ -5,13 +5,12 @@ CONFIG -= qt
 
 INCLUDEPATH += "C:\SFML\include"
 
-LIBS += -L"C:\SFML\lib"
-CONFIG(debug, debug|release){
-    LIBS += -lsfml-audio-d -lsfml-graphics-d -lsfml-network-d -lsfml-system-d -lsfml-window-d
-} else {
-    LIBS += -lsfml-audio -lsfml-graphics -lsfml-network -lsfml-system -lsfml-window
-}
+LIBS += -LC:/SFML/lib
+LIBS += -lsfml-graphics -lsfml-window -lsfml-system
+
+
 SOURCES += \
+        Castle.cpp \
         GameEngine.cpp \
         Hero.cpp \
         Tower.cpp \
@@ -20,6 +19,7 @@ SOURCES += \
         EnemyRegular.cpp
 
 HEADERS += \
+        Castle.h \
         Enemy.h \
         EnemyRegular.h \
         GameEngine.h \

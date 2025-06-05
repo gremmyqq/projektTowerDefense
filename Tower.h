@@ -2,14 +2,13 @@
 #define TOWER_H
 
 #include <SFML/Graphics.hpp>
-#include <memory>
 #include "Enemy.h"
 
 class Tower {
 public:
     Tower(const sf::Vector2f& position);
 
-    void update(float deltaTime,  std::vector<std::unique_ptr<Enemy>> enemies);
+    void update(float deltaTime);
     void draw(sf::RenderWindow& window);
     void attack(Enemy* enemy);
 
