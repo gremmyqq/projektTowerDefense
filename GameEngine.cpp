@@ -33,7 +33,7 @@ void GameEngine::update(float deltaTime) {
     }
 
     for (auto& enemy : enemies)
-        enemy->update(deltaTime);
+        enemy.update(deltaTime);
 
     for (auto& tower : towers)
         tower.update(deltaTime, enemies);

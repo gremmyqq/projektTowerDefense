@@ -14,6 +14,7 @@ CONFIG(debug, debug|release){
 SOURCES += \
         GameEngine.cpp \
         Hero.cpp \
+        Tower.cpp \
         main.cpp \
         Enemy.cpp \
         EnemyRegular.cpp
@@ -22,7 +23,8 @@ HEADERS += \
         Enemy.h \
         EnemyRegular.h \
         GameEngine.h \
-        Hero.h
+        Hero.h \
+        Tower.h
 
 
 
