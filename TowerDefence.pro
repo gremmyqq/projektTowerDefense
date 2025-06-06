@@ -5,7 +5,7 @@ CONFIG -= qt
 
 INCLUDEPATH += "C:\SFML\include"
 
-LIBS += -LC:/SFML/lib
+LIBS += -LC:\SFML\lib
 LIBS += -lsfml-graphics -lsfml-window -lsfml-system
 
 
