@@ -35,6 +35,9 @@ private:
     float waveTimer = 0.f;
     float spawnClock = 0.f; // zamiast waveTimer
 
+    sf::Texture backgroundTexture;
+    sf::Sprite backgroundSprite;
+
     size_t nextSpawnIndex = 0;
 
     // Ścieżka dla wrogów

@@ -1,6 +1,8 @@
 #include "Field.h"
 #include <cmath>
 #include <iostream>
+sf::Texture Field::fieldTexture;
+
 
 Field::Field(const sf::Vector2f& position)
     : type(FieldType::Empty),
@@ -10,7 +12,21 @@ Field::Field(const sf::Vector2f& position)
     shape.setSize({50.f, 50.f});
     shape.setOrigin(shape.getSize() / 2.f);
     shape.setPosition(position);
-    shape.setFillColor(sf::Color(150, 150, 150));
+    shape.setFillColor(sf::Color::Transparent);
+
+    if (fieldTexture.getSize().x == 0) {
+        if (!fieldTexture.loadFromFile("assets/field_transparent.png")) {
+            std::cerr << "Nie można załadować assets/field.png\n";
+        }
+    }
+
+    fieldSprite.setTexture(fieldTexture);
+    fieldSprite.setTextureRect(sf::IntRect(0, 0, 64, 64));
+    fieldSprite.setOrigin(32.f, 32.f);
+    fieldSprite.setPosition(position);
+
+
+
 }
 
 void Field::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies) {
@@ -24,7 +40,10 @@ void Field::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies
 }
 
 void Field::draw(sf::RenderWindow& window) {
-    window.draw(shape);
+    if (fieldTexture.getSize().x > 0)
+        window.draw(fieldSprite);
+    else
+        window.draw(shape); // awaryjnie
 }
 
 bool Field::contains(const sf::Vector2f& point) const {

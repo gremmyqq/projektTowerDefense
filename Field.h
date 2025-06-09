@@ -26,6 +26,9 @@ private:
     sf::RectangleShape shape;
     FieldType type;
 
+    static sf::Texture fieldTexture; // ← współdzielona
+    sf::Sprite fieldSprite;
+
     // --- tylko dla wieży
     float attackCooldown;
     float timeSinceLastAttack;

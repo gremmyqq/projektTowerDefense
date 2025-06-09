@@ -33,6 +33,18 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         throw std::runtime_error("Nie można załadować levels.txt");
     }
 
+    //Ładowanie tła
+    if (!backgroundTexture.loadFromFile("assets/tlomapa.bmp")) {
+        throw std::runtime_error("Nie można załadować tła: assets/tlomapa.bmp");
+    }
+
+    backgroundSprite.setTexture(backgroundTexture);
+    backgroundSprite.setScale(
+        static_cast<float>(window.getSize().x) / backgroundTexture.getSize().x,
+        static_cast<float>(window.getSize().y) / backgroundTexture.getSize().y
+        );
+
+
     allPaths = levelLoader.getPaths();
     waveMap = levelLoader.getWaveMap();
 
@@ -145,6 +157,7 @@ void GameEngine::update(float deltaTime) {
 
 void GameEngine::render() {
     window.clear();
+    window.draw(backgroundSprite);
 
     // Zamek
     castle.draw(window);
