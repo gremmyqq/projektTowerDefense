@@ -4,10 +4,12 @@
 #include <SFML/Graphics.hpp>
 #include <memory>
 #include <vector>
+#include <iostream>
 #include "EnemyRegular.h"
 #include "Field.h"
 #include "Hero.h"
 #include "Castle.h"
+#include "LevelLoader.h"
 
 class GameEngine {
 public:
@@ -23,6 +25,18 @@ private:
     std::unique_ptr<Hero> hero;
     Castle castle;
 
+    //System ładowania poziomów
+    LevelLoader levelLoader;
+
+    std::vector<std::vector<sf::Vector2f>> allPaths;
+    std::map<int, std::vector<EnemySpawn>> waveMap;
+
+    int currentWave = 0;
+    float waveTimer = 0.f;
+    float spawnClock = 0.f; // zamiast waveTimer
+
+    size_t nextSpawnIndex = 0;
+
     // Ścieżka dla wrogów
     std::vector<sf::Vector2f> path;
 
@@ -37,7 +51,8 @@ private:
     void handleEvents();
     void update(float deltaTime);
     void render();
-    void spawnEnemy();
+    //void spawnEnemy();
+
 };
 
 #endif // GAMEENGINE_H

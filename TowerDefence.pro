@@ -14,6 +14,7 @@ SOURCES += \
         Field.cpp \
         GameEngine.cpp \
         Hero.cpp \
+        LevelLoader.cpp \
         Tower.cpp \
         main.cpp \
         Enemy.cpp \
@@ -26,6 +27,7 @@ HEADERS += \
         Field.h \
         GameEngine.h \
         Hero.h \
+        LevelLoader.h \
         Tower.h
 
 
