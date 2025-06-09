@@ -13,8 +13,8 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     };
 
     // Inicjalizacja wież
-    towers.emplace_back(sf::Vector2f(300.f, 300.f));
-    towers.emplace_back(sf::Vector2f(500.f, 300.f));
+    fields.emplace_back(sf::Vector2f(300.f, 300.f));
+    fields.emplace_back(sf::Vector2f(500.f, 300.f));
 
     // Wczytanie tekstury bohatera
     if (!heroTexture.loadFromFile("assets/hero.png")) {
@@ -60,12 +60,10 @@ void GameEngine::update(float deltaTime) {
         hero->update(deltaTime, window, enemies);
 
     // Wieże
-    for (auto& tower : towers) {
-        tower.update(deltaTime);
-        for (auto& enemy : enemies) {
-            tower.attack(enemy.get()); // ✅ teraz 'enemy' istnieje
-        }
+    for (auto& field : fields) {
+        field.update(deltaTime, enemies); // ✔️ przekazujemy enemy tylko raz
     }
+
 
     // Zamek
     castle.update();
@@ -91,8 +89,8 @@ void GameEngine::render() {
     castle.draw(window);
 
     // Wieże
-    for (auto& tower : towers)
-        tower.draw(window);
+    for (auto& field : fields)
+        field.draw(window);
 
     // Bohater
     if (hero)

@@ -11,6 +11,7 @@ LIBS += -lsfml-graphics -lsfml-window -lsfml-system
 
 SOURCES += \
         Castle.cpp \
+        Field.cpp \
         GameEngine.cpp \
         Hero.cpp \
         Tower.cpp \
@@ -22,6 +23,7 @@ HEADERS += \
         Castle.h \
         Enemy.h \
         EnemyRegular.h \
+        Field.h \
         GameEngine.h \
         Hero.h \
         Tower.h

@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 #include "EnemyRegular.h"
-#include "Tower.h"
+#include "Field.h"
 #include "Hero.h"
 #include "Castle.h"
 
@@ -19,7 +19,7 @@ private:
 
     // Komponenty gry
     std::vector<std::unique_ptr<Enemy>> enemies;
-    std::vector<Tower> towers;
+    std::vector<Field> fields;
     std::unique_ptr<Hero> hero;
     Castle castle;
 
