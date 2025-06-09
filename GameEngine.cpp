@@ -5,7 +5,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     : window(window),
     spawnTimer(0.f),
     spawnInterval(3.f),
-    castle(sf::Vector2f(window.getSize().x * 0.5f, window.getSize().y * 0.85f)) {
+    castle(sf::Vector2f(600.f, 600.f)) {
 
     /*
     path = {
@@ -63,6 +63,14 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         selectedField = nullptr;
     });
 
+    shop.addItem("Ulepsz zamek", 100, [this]() {
+        if (castle.getLevel() < castle.getMaxLevel()) {
+            castle.upgrade();
+            std::cout << "Zamek ulepszony do poziomu " << castle.getLevel() << std::endl;
+        } else {
+            std::cout << "Zamek ma już maksymalny poziom." << std::endl;
+        }
+    });
 
 
 }
@@ -86,18 +94,6 @@ void GameEngine::handleEvents() {
             window.close();
         }
 
-        // Obsługa kliknięcia myszą
-        if (event.type == sf::Event::MouseButtonPressed &&
-            event.mouseButton.button == sf::Mouse::Left) {
-
-            sf::Vector2f mousePos = window.mapPixelToCoords(
-                sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
-
-            for (auto& field : fields) {
-                field.handleClick(mousePos);
-            }
-        }
-
         if (event.type == sf::Event::MouseButtonPressed &&
             event.mouseButton.button == sf::Mouse::Left) {
 
@@ -106,8 +102,11 @@ void GameEngine::handleEvents() {
 
             selectedField = nullptr;
             for (auto& field : fields) {
-                if (field.contains(mousePos) && field.getType() == FieldType::Empty) {
-                    selectedField = &field;
+                if (field.contains(mousePos)) {
+                    if (field.getType() == FieldType::Empty) {
+                        selectedField = &field;
+                    }
+                    field.handleClick(mousePos);
                     break;
                 }
             }

@@ -8,6 +8,9 @@ INCLUDEPATH += "C:\SFML\include"
 LIBS += -LC:\SFML\lib
 LIBS += -lsfml-graphics -lsfml-window -lsfml-system
 
+assets.files = $$PWD/assets/*
+assets.path = $$OUT_PWD/assets
+INSTALLS += assets
 
 SOURCES += \
         Castle.cpp \
@@ -31,6 +34,3 @@ HEADERS += \
         LevelLoader.h \
         Shop.h \
         Tower.h
-
-
-

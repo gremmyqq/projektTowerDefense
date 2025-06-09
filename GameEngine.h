@@ -24,11 +24,13 @@ private:
     std::vector<std::unique_ptr<Enemy>> enemies;
     std::vector<Field> fields;
     std::unique_ptr<Hero> hero;
-    Castle castle;
     Field* selectedField = nullptr;
     Shop shop;
     sf::Font uiFont;
     int playerResources = 100;
+    float spawnTimer;
+    float spawnInterval;
+    Castle castle;
 
     //System ładowania poziomów
     LevelLoader levelLoader;
@@ -52,8 +54,7 @@ private:
     sf::Texture heroTexture;
 
     // Timery
-    float spawnTimer;
-    float spawnInterval;
+
 
     // Metody pomocnicze
     void handleEvents();

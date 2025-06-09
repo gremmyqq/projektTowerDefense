@@ -25,6 +25,7 @@ public:
 
 private:
     sf::Sprite sprite;
+    sf::Texture texture;
     sf::RectangleShape hpBarBg, hpBar;
 
     int maxHP;

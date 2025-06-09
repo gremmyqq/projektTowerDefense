@@ -1,7 +1,17 @@
 #include "Castle.h"
+#include <stdexcept>
 
 Castle::Castle(const sf::Vector2f& position)
     : maxHP(500), hp(maxHP), level(1), maxLevel(5) {
+
+    if (!texture.loadFromFile("assets/castle.png")) {
+        throw std::runtime_error("Nie można załadować assets/castle.png");
+    }
+
+    sprite.setTexture(texture);
+    sprite.setOrigin(texture.getSize().x / 2.f, texture.getSize().y / 2.f);
+    sprite.setPosition(position);
+    sprite.setScale(0.25f, 0.25f); // jeśli chcesz pomniejszyć
 
     hpBarBg.setSize(sf::Vector2f(60, 8));
     hpBarBg.setFillColor(sf::Color::Red);
@@ -14,6 +24,7 @@ Castle::Castle(const sf::Vector2f& position)
 }
 
 void Castle::draw(sf::RenderWindow& window) {
+    window.draw(sprite);
     window.draw(hpBarBg);
     window.draw(hpBar);
 }
@@ -45,11 +56,11 @@ int Castle::getMaxLevel() const {
 }
 
 bool Castle::canUpgradeTowers() const {
-    return level >= 2;  // np. od poziomu 2 można ulepszać wieże
+    return level >= 2;
 }
 
 bool Castle::canUpgradeGenerators() const {
-    return level >= 3;  // np. od poziomu 3 można ulepszać budynki
+    return level >= 3;
 }
 
 int Castle::getHP() const {
