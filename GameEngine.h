@@ -6,6 +6,7 @@
 #include <vector>
 #include <iostream>
 #include "EnemyRegular.h"
+#include "Shop.h"
 #include "Field.h"
 #include "Hero.h"
 #include "Castle.h"
@@ -24,6 +25,10 @@ private:
     std::vector<Field> fields;
     std::unique_ptr<Hero> hero;
     Castle castle;
+    Field* selectedField = nullptr;
+    Shop shop;
+    sf::Font uiFont;
+    int playerResources = 100;
 
     //System ładowania poziomów
     LevelLoader levelLoader;

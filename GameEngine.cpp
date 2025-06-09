@@ -48,6 +48,23 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     allPaths = levelLoader.getPaths();
     waveMap = levelLoader.getWaveMap();
 
+    uiFont.loadFromFile("assets/arial.ttf"); // lub inny font
+    shop.setFont(uiFont);
+    shop.setPosition({20.f, 500.f});
+    shop.setGoldPointer(&playerResources);
+
+    shop.addItem("Wieża", 50, [this]() {
+        if (selectedField) selectedField->buildTower();
+        selectedField = nullptr;
+    });
+
+    shop.addItem("Generator", 30, [this]() {
+        if (selectedField) selectedField->buildGenerator();
+        selectedField = nullptr;
+    });
+
+
+
 }
 
 void GameEngine::run() {
@@ -80,6 +97,25 @@ void GameEngine::handleEvents() {
                 field.handleClick(mousePos);
             }
         }
+
+        if (event.type == sf::Event::MouseButtonPressed &&
+            event.mouseButton.button == sf::Mouse::Left) {
+
+            sf::Vector2f mousePos = window.mapPixelToCoords(
+                sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+
+            selectedField = nullptr;
+            for (auto& field : fields) {
+                if (field.contains(mousePos) && field.getType() == FieldType::Empty) {
+                    selectedField = &field;
+                    break;
+                }
+            }
+
+            shop.handleClick(mousePos);
+        }
+
+
     }
 }
 
@@ -173,6 +209,9 @@ void GameEngine::render() {
     // Przeciwnicy
     for (auto& enemy : enemies)
         enemy->draw(window);
+
+    if (selectedField)
+        shop.draw(window);
 
 
     window.display();

@@ -21,6 +21,9 @@ public:
 
     void handleClick(const sf::Vector2f& mousePos); // kliknięcie myszką
     bool contains(const sf::Vector2f& point) const;
+    void buildTower();
+    void buildGenerator();
+    FieldType getType() const { return type; }
 
 private:
     sf::RectangleShape shape;
@@ -39,9 +42,6 @@ private:
     float resourceTimer;
     float resourceInterval;
     int* resourceCount; // wskaźnik na licznik surowców
-
-    void buildTower();
-    void buildGenerator();
 
     void attackEnemies(std::vector<std::unique_ptr<Enemy>>& enemies);
     void generateResources();
