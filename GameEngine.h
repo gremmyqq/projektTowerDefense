@@ -47,6 +47,12 @@ private:
 
     size_t nextSpawnIndex = 0;
 
+    //przycisk start rundy
+    sf::Texture startButtonTexture;
+    sf::Sprite startButtonSprite;
+    bool roundActive = false;
+
+
     // Ścieżka dla wrogów
     std::vector<sf::Vector2f> path;
 

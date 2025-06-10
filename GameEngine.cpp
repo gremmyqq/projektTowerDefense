@@ -44,6 +44,20 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         static_cast<float>(window.getSize().y) / backgroundTexture.getSize().y
         );
 
+    //Przycisk startu
+    if (!startButtonTexture.loadFromFile("assets/start_button.bmp")) {
+        throw std::runtime_error("Nie można załadować start_button.png");
+    }
+
+    startButtonSprite.setTexture(startButtonTexture);
+    startButtonSprite.setOrigin(
+        startButtonTexture.getSize().x / 2.f,
+        startButtonTexture.getSize().y / 2.f
+        );
+    startButtonSprite.setPosition(
+        window.getSize().x - 100.f,
+        window.getSize().y - 100.f
+        );
 
     allPaths = levelLoader.getPaths();
     waveMap = levelLoader.getWaveMap();
@@ -113,6 +127,23 @@ void GameEngine::handleEvents() {
 
             shop.handleClick(mousePos);
         }
+        if (event.type == sf::Event::MouseButtonPressed &&
+            event.mouseButton.button == sf::Mouse::Left) {
+
+            sf::Vector2f mousePos = window.mapPixelToCoords(
+                sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+
+            if (startButtonSprite.getGlobalBounds().contains(mousePos) && !roundActive) {
+                roundActive = true;
+                spawnClock = 0;
+                std::cout << "Runda wystartowała!" << std::endl;
+            }
+
+            for (auto& field : fields) {
+                field.handleClick(mousePos);
+            }
+        }
+
 
 
     }
@@ -122,7 +153,7 @@ void GameEngine::handleEvents() {
 void GameEngine::update(float deltaTime) {
     spawnClock += deltaTime;
 
-    while (waveMap.find(currentWave) != waveMap.end()) {
+    if (roundActive && waveMap.find(currentWave) != waveMap.end()) {
         const auto& wave = waveMap[currentWave];
 
         if (nextSpawnIndex < wave.size() &&
@@ -143,15 +174,14 @@ void GameEngine::update(float deltaTime) {
             }
 
             ++nextSpawnIndex;
-        } else {
-            break;
         }
 
         if (nextSpawnIndex >= wave.size() && enemies.empty()) {
-            ++currentWave;
+            roundActive = false;
+            currentWave++;
             nextSpawnIndex = 0;
             spawnClock = 0.f;
-            std::cout << "Next wave: " << currentWave << std::endl;
+            std::cout << "Runda zakonczona. Czekam na przycisk." << std::endl;
         }
     }
 
@@ -211,6 +241,10 @@ void GameEngine::render() {
 
     if (selectedField)
         shop.draw(window);
+
+    // Start przycisk
+    window.draw(startButtonSprite);
+
 
 
     window.display();
