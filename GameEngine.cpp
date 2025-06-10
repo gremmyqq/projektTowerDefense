@@ -21,7 +21,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
 
 
     // Wczytanie tekstury bohatera
-    if (!heroTexture.loadFromFile("assets/hero.png")) {
+    if (!heroTexture.loadFromFile("assets/hero1.png")) {
         throw std::runtime_error("Nie można załadować assets/hero.png");
     }
 

@@ -6,55 +6,48 @@
 #include <vector>
 #include "Enemy.h"
 
-// Klasa reprezentująca bohatera sterowanego przez gracza
 class Hero {
 public:
-    // Konstruktor — ustawia pozycję spawnu i teksturę sprite’a
     Hero(const sf::Vector2f& spawnPoint, const sf::Texture& texture);
-
-    // Aktualizacja bohatera: ruch, atak, pasek HP
     void update(float deltaTime, const sf::RenderWindow& window, std::vector<std::unique_ptr<Enemy>>& enemies);
-
-    // Rysowanie bohatera i jego paska zdrowia
     void draw(sf::RenderWindow& window);
-
-    // Odbieranie obrażeń
     void takeDamage(int dmg);
-
-    // Czy bohater jest martwy
     bool isDead() const;
-
-    // Respawn — resetuje statystyki i ustawia na pozycji początkowej
     void respawn();
 
 private:
-    // Sprite bohatera
+    // Sprite i animacja
     sf::Sprite sprite;
+    sf::Vector2i frameSize;
+    int currentFrame;
+    int frameCount;
+    int animationRow;
+    float frameTime;
+    float animationTimer;
+
+    enum class HeroAnimationState { Idle, Run, Attack };
+    HeroAnimationState animationState;
 
     // Pasek zdrowia
     sf::RectangleShape hpBarBg, hpBar;
 
     // Statystyki
-    float speed;           // Prędkość poruszania
-    int maxHp;             // Maksymalne zdrowie
-    int hp;                // Aktualne zdrowie
-    int damage;            // Obrażenia
-    float attackCooldown;  // Odstęp między atakami
-    float attackTimer;     // Licznik czasu od ostatniego ataku
-    int level;             // Poziom bohatera
-    float range;           // Zasięg ataku
+    float speed;
+    int maxHp;
+    int hp;
+    int damage;
+    float attackCooldown;
+    float attackTimer;
+    int level;
+    float range;
 
-    sf::Vector2f spawnPosition; // Pozycja startowa
+    sf::Vector2f spawnPosition;
 
-    // Obsługa sterowania klawiaturą
+    // Sterowanie
     void handleMovement(float deltaTime);
-
-    // Obsługa ataku myszką
     void handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies, const sf::RenderWindow& window);
-
-    // Aktualizacja graficzna paska HP
     void updateHpBar();
+    void updateAnimation(float deltaTime);
 };
 
 #endif // HERO_H
-
