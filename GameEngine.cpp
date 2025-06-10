@@ -5,7 +5,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     : window(window),
     spawnTimer(0.f),
     spawnInterval(3.f),
-    castle(sf::Vector2f(600.f, 600.f)) {
+    castle(sf::Vector2f(280.f, 880.f)) {
 
     /*
     path = {
@@ -61,6 +61,13 @@ GameEngine::GameEngine(sf::RenderWindow& window)
 
     allPaths = levelLoader.getPaths();
     waveMap = levelLoader.getWaveMap();
+    for (auto& path : allPaths) {
+        for (auto& point : path) {
+            point.x = (point.x / 1280.f) * window.getSize().x;
+            point.y = (point.y / 655.f) * window.getSize().y;
+        }
+    }
+
 
     uiFont.loadFromFile("assets/arial.ttf"); // lub inny font
     shop.setFont(uiFont);

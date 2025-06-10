@@ -11,7 +11,7 @@ Castle::Castle(const sf::Vector2f& position)
     sprite.setTexture(texture);
     sprite.setOrigin(texture.getSize().x / 2.f, texture.getSize().y / 2.f);
     sprite.setPosition(position);
-    sprite.setScale(0.25f, 0.25f); // jeśli chcesz pomniejszyć
+    sprite.setScale(0.5f, 0.5f); // jeśli chcesz pomniejszyć
 
     hpBarBg.setSize(sf::Vector2f(60, 8));
     hpBarBg.setFillColor(sf::Color::Red);
@@ -19,7 +19,7 @@ Castle::Castle(const sf::Vector2f& position)
     hpBar.setSize(sf::Vector2f(60, 8));
     hpBar.setFillColor(sf::Color::Green);
 
-    hpBarBg.setPosition(position.x - 30, position.y - 70);
+    hpBarBg.setPosition(position.x - 60, position.y - 140);
     hpBar.setPosition(hpBarBg.getPosition());
 }
 
