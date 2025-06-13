@@ -157,6 +157,13 @@ void GameEngine::update(float deltaTime) {
     if (hero)
         hero->update(deltaTime, window, enemies);
 
+    if (hero && !hero->isDead()) {
+        for (auto& enemy : enemies) {
+            enemy->updateAgainstHero(deltaTime, *hero);
+        }
+    }
+
+
     for (auto& field : fields)
         field.update(deltaTime, enemies);
 

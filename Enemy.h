@@ -9,6 +9,8 @@
 #include <vector>
 #include <iostream>
 
+class HeroBase;  // forward declaration
+
 class Enemy {
 public:
     Enemy(const std::vector<sf::Vector2f>& path);
@@ -29,6 +31,7 @@ public:
     virtual void die();
     bool markedForDeletion = false;
 
+    virtual void updateAgainstHero(float deltaTime, HeroBase& hero);
 
 
     // ... (dotychczasowy kod)
@@ -47,7 +50,7 @@ protected:
     float animationTimer = 0.f;
     float animationInterval = 0.2f;
     int currentFrame = 0;
-    int totalFrames = 3;
+    int totalFrames = 6;
     int frameWidth = 48;
     int frameHeight = 48;
     int direction = 0;
@@ -63,6 +66,13 @@ protected:
     void moveTowardsTarget(float deltaTime);
     void updateAnimation(float deltaTime);
     void updateSpriteDirection(const sf::Vector2f& dir);
+
+    float attackCooldown = 1.0f;
+    float attackTimer = 0.0f;
+    float attackRange = 50.0f;
+    int attackDamage = 20;
+
+
 };
 
 #endif //ENEMY_H

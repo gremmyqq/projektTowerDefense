@@ -3,6 +3,7 @@
 //
 #include "Enemy.h"
 #include <cmath>
+#include "Herobase.h"  // dodaj na górze jeśli brak
 
 Enemy::Enemy(const std::vector<sf::Vector2f>& path)
     : path(path), currentTargetIndex(0) {
@@ -36,20 +37,23 @@ void Enemy::setPosition(sf::Vector2f newPos) {
 }
 
 void Enemy::moveTowardsTarget(float deltaTime) {
+    if (state == EnemyState::Attacking || state == EnemyState::Dying) return; // 🚫 Nie ruszaj się w tych stanach
+
     if (currentTargetIndex >= path.size()) return;
 
     sf::Vector2f target = path[currentTargetIndex];
-    sf::Vector2f directionVec = target - position;
-    float distance = std::sqrt(directionVec.x * directionVec.x + directionVec.y * directionVec.y);
+    sf::Vector2f direction = target - position;
+    float distance = std::sqrt(direction.x * direction.x + direction.y * direction.y);
 
     if (distance < 1.0f) {
         ++currentTargetIndex;
     } else {
-        directionVec /= distance;
-        updateSpriteDirection(directionVec); // nowa linia
-        position += directionVec * speed * deltaTime;
+        direction /= distance;
+        updateSpriteDirection(direction); // tylko w stanie Walking
+        position += direction * speed * deltaTime;
     }
 }
+
 
 void Enemy::updateSpriteDirection(const sf::Vector2f& dir) {
     float angle = std::atan2(dir.y, dir.x) * 180 / 3.14159f;
@@ -73,8 +77,12 @@ void Enemy::updateAnimation(float deltaTime) {
                 markedForDeletion = true; // gotowy do usunięcia
             }
         } else if (state == EnemyState::Attacking) {
-            currentFrame = (currentFrame + 1) % totalFrames;
-            // Możesz dodać: if (currentFrame == 0) state = EnemyState::Walking;
+            if (currentFrame < totalFrames - 1) {
+                currentFrame++;
+            } else {
+                state = EnemyState::Walking;
+                currentFrame = 0;
+            }
         } else {
             currentFrame = (currentFrame + 1) % totalFrames;
         }
@@ -105,3 +113,23 @@ void Enemy::die() {
 }
 
 
+
+
+void Enemy::updateAgainstHero(float deltaTime, HeroBase& hero) {
+    if (state == EnemyState::Dying) return;
+
+    attackTimer += deltaTime;
+
+    sf::Vector2f toHero = hero.getPosition() - position;
+    float distance = std::sqrt(toHero.x * toHero.x + toHero.y * toHero.y);
+
+    if (distance <= attackRange) {
+        updateSpriteDirection(toHero);
+
+        if (attackTimer >= attackCooldown) {
+            startAttack();
+            hero.takeDamage(attackDamage);
+            attackTimer = 0.f;
+        }
+    }
+}

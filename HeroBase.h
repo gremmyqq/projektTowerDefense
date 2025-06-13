@@ -21,7 +21,7 @@ public:
     virtual bool isDead() const;
     virtual void respawn();
     virtual void queueAttack(); // nowa funkcja
-
+    sf::Vector2f getPosition() const;
 
 protected:
     // Wygląd

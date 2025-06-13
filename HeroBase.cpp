@@ -35,6 +35,10 @@ void HeroBase::respawn() {
     sprite.setPosition(spawnPosition);
 }
 
+sf::Vector2f HeroBase::getPosition() const {
+    return sprite.getPosition();
+}
+
 void HeroBase::handleMovement(float deltaTime) {
     sf::Vector2f moveDir(0.f, 0.f);
 
