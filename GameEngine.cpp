@@ -170,7 +170,7 @@ void GameEngine::update(float deltaTime) {
 
     enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
                                  [](const std::unique_ptr<Enemy>& e) {
-                                     return e->isDead() || e->reachedEnd();
+                                     return e->markedForDeletion || e->reachedEnd();
                                  }), enemies.end());
 }
 

@@ -27,6 +27,7 @@ public:
     // --- Nowe metody animacyjne ---
     virtual void startAttack();
     virtual void die();
+    bool markedForDeletion = false;
 
 
 
@@ -58,7 +59,6 @@ protected:
     };
 
     EnemyState state = EnemyState::Walking;
-    bool markedForDeletion = false;
 
     void moveTowardsTarget(float deltaTime);
     void updateAnimation(float deltaTime);
