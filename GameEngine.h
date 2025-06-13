@@ -8,7 +8,10 @@
 #include "EnemyRegular.h"
 #include "Shop.h"
 #include "Field.h"
-#include "Hero.h"
+#include "HeroBase.h"
+#include "Archer.h"
+#include "Knight.h"
+#include "Mage.h"
 #include "Castle.h"
 #include "LevelLoader.h"
 
@@ -23,7 +26,7 @@ private:
     // Komponenty gry
     std::vector<std::unique_ptr<Enemy>> enemies;
     std::vector<Field> fields;
-    std::unique_ptr<Hero> hero;
+    std::unique_ptr<HeroBase> hero;
     Field* selectedField = nullptr;
     Shop shop;
     sf::Font uiFont;
@@ -52,22 +55,32 @@ private:
     sf::Sprite startButtonSprite;
     bool roundActive = false;
 
-
     // Ścieżka dla wrogów
     std::vector<sf::Vector2f> path;
 
     // Tekstury
     sf::Texture heroTexture;
 
-    // Timery
+    // Wybór bohatera
+    enum class HeroType {
+        None,
+        Archer,
+        Knight,
+        Mage
+    };
+    HeroType selectedHeroType = HeroType::None;
 
+    sf::RectangleShape archerBtn, knightBtn, mageBtn;
+    sf::Text archerText, knightText, mageText;
 
     // Metody pomocnicze
     void handleEvents();
     void update(float deltaTime);
     void render();
+    void initHeroSelectionUI();
+    void drawHeroSelectionUI();
+    void handleHeroSelectionClick(const sf::Vector2f& mousePos);
     //void spawnEnemy();
-
 };
 
 #endif // GAMEENGINE_H

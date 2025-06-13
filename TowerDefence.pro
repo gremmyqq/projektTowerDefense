@@ -13,24 +13,30 @@ assets.path = $$OUT_PWD/assets
 INSTALLS += assets
 
 SOURCES += \
+        Archer.cpp \
         Castle.cpp \
         Field.cpp \
         GameEngine.cpp \
-        Hero.cpp \
+        HeroBase.cpp \
+        Knight.cpp \
         LevelLoader.cpp \
         Shop.cpp \
         Tower.cpp \
+        mage.cpp \
         main.cpp \
         Enemy.cpp \
         EnemyRegular.cpp
 
 HEADERS += \
+        Archer.h \
         Castle.h \
         Enemy.h \
         EnemyRegular.h \
         Field.h \
         GameEngine.h \
-        Hero.h \
+        HeroBase.h \
+        Knight.h \
         LevelLoader.h \
         Shop.h \
-        Tower.h
+        Tower.h \
+        mage.h

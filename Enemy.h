@@ -1,17 +1,12 @@
-//
-// Created by CP on 29.05.2025.
-//
-
 #ifndef ENEMY_H
 #define ENEMY_H
 
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include <iostream>
 
 class Enemy {
 public:
-    Enemy(const std::vector<sf::Vector2f>& path);
+    explicit Enemy(const std::vector<sf::Vector2f>& path);
     virtual ~Enemy() = default;
 
     virtual void update(float deltaTime) = 0;
@@ -22,20 +17,17 @@ public:
     virtual bool reachedEnd() const;
 
     sf::Vector2f getPosition() const;
-
-    void setPosition(sf::Vector2f newPos);
-
+    void setPosition(sf::Vector2f pos);
 
 protected:
     std::vector<sf::Vector2f> path;
-    size_t currentTargetIndex;
-
     sf::Vector2f position;
-    float speed;
-    int health;
-    int maxHealth;
+    size_t currentTargetIndex = 0;
+    float speed = 100.f;
 
+    int health = 100;
+    int maxHealth = 100;
     void moveTowardsTarget(float deltaTime);
 };
 
-#endif //ENEMY_H
+#endif // ENEMY_H

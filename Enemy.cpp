@@ -3,6 +3,7 @@
 //
 #include "Enemy.h"
 #include <cmath>
+#include <iostream>
 
 Enemy::Enemy(const std::vector<sf::Vector2f>& path)
     : path(path), currentTargetIndex(0) {
@@ -13,6 +14,7 @@ Enemy::Enemy(const std::vector<sf::Vector2f>& path)
 
 void Enemy::takeDamage(int damage) {
     health -= damage;
+    std::cout << "Enemy took damage! New HP: " << health << std::endl;
     if (health < 0) health = 0;
 }
 

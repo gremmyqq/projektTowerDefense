@@ -3,6 +3,7 @@
 //
 
 #include "EnemyRegular.h"
+#include <iostream>
 
 EnemyRegular::EnemyRegular(const std::vector<sf::Vector2f>& path)
     : Enemy(path) {
