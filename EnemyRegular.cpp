@@ -3,46 +3,38 @@
 //
 
 #include "EnemyRegular.h"
-#include <iostream>
 
 EnemyRegular::EnemyRegular(const std::vector<sf::Vector2f>& path)
     : Enemy(path) {
     maxHealth = 100;
     health = maxHealth;
     speed = 100;
-    if (!texture.loadFromFile("assets/enemy_regular.png")) {
-        std::cout << "Nie można załadować enemy_regular.png\n";
-    }
 
+    texture.loadFromFile("assets/enemy_regular.png");
     sprite.setTexture(texture);
-    sprite.setTextureRect(sf::IntRect(0, 0, frameWidth, frameHeight));
-    sprite.setOrigin(frameWidth, frameHeight);
+    frameWidth = 48;
+    frameHeight = 48;
+    totalFrames = 6;
+    animationInterval = 0.2f;
+
+    sprite.setOrigin(frameWidth / 2.f, frameHeight / 2.f);
     sprite.setScale(2.f, 2.f);
-    sprite.setPosition(position);
-
-
-    if (!path.empty()) {
-        setPosition(path[0]);  // <- jawne ustawienie pozycji
-    }
+    if (!path.empty()) setPosition(path[0]);
 }
+
 
 
 void EnemyRegular::update(float deltaTime) {
     if (!reachedEnd() && !isDead()) {
         moveTowardsTarget(deltaTime);
     }
-
-    animationTimer += deltaTime;
-    if (animationTimer >= animationInterval) {
-        currentFrame = (currentFrame + 1) % totalFrames;
-        sprite.setTextureRect(sf::IntRect(currentFrame * frameWidth, 0, frameWidth, frameHeight));
-        animationTimer = 0.f;
-    }
-    sprite.setPosition(position);
-
+    updateAnimation(deltaTime);
 }
+
 
 void EnemyRegular::draw(sf::RenderWindow& window) {
     shape.setPosition(position);
     window.draw(sprite);
 }
+
+

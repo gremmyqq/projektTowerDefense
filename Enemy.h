@@ -1,12 +1,17 @@
+//
+// Created by CP on 29.05.2025.
+//
+
 #ifndef ENEMY_H
 #define ENEMY_H
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <iostream>
 
 class Enemy {
 public:
-    explicit Enemy(const std::vector<sf::Vector2f>& path);
+    Enemy(const std::vector<sf::Vector2f>& path);
     virtual ~Enemy() = default;
 
     virtual void update(float deltaTime) = 0;
@@ -17,17 +22,47 @@ public:
     virtual bool reachedEnd() const;
 
     sf::Vector2f getPosition() const;
-    void setPosition(sf::Vector2f pos);
 
+    void setPosition(sf::Vector2f newPos);
+    // --- Nowe metody animacyjne ---
+    virtual void startAttack();
+    virtual void die();
+
+
+
+    // ... (dotychczasowy kod)
 protected:
     std::vector<sf::Vector2f> path;
-    sf::Vector2f position;
-    size_t currentTargetIndex = 0;
-    float speed = 100.f;
+    size_t currentTargetIndex;
 
-    int health = 100;
-    int maxHealth = 100;
+    sf::Vector2f position;
+    float speed;
+    int health;
+    int maxHealth;
+
+    sf::Texture texture;
+    sf::Sprite sprite;
+
+    float animationTimer = 0.f;
+    float animationInterval = 0.2f;
+    int currentFrame = 0;
+    int totalFrames = 3;
+    int frameWidth = 48;
+    int frameHeight = 48;
+    int direction = 0;
+
+    enum class EnemyState {
+        Walking,
+        Attacking,
+        Dying
+    };
+
+    EnemyState state = EnemyState::Walking;
+    bool markedForDeletion = false;
+
     void moveTowardsTarget(float deltaTime);
+    void updateAnimation(float deltaTime);
+    void updateSpriteDirection(const sf::Vector2f& dir);
 };
 
-#endif // ENEMY_H
+#endif //ENEMY_H
