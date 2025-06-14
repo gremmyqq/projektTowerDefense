@@ -1,6 +1,7 @@
 #include "Knight.h"
 #include <cstdlib> // rand
 #include <cmath>
+#include <iostream>
 #include <stdexcept>
 
 Knight::Knight(const sf::Vector2f& spawnPoint, const sf::Texture& texture)
@@ -51,15 +52,15 @@ void Knight::update(float deltaTime, const sf::RenderWindow& window,
 }
 
 void Knight::draw(sf::RenderWindow& window) {
-    if (isDead()) return;
+    if (state != KnightState::Dead) {
+        hpBarBg.setPosition(sprite.getPosition().x - 20.f, sprite.getPosition().y - 40.f);
+        hpBar.setPosition(hpBarBg.getPosition());
+        window.draw(hpBarBg);
+        window.draw(hpBar);
+    }
 
-    window.draw(sprite);
+    window.draw(sprite); // <- rysuj sprite ZAWSZE, nawet w stanie Dead
 
-    hpBarBg.setPosition(sprite.getPosition().x - 20.f, sprite.getPosition().y - 40.f);
-    hpBar.setPosition(hpBarBg.getPosition());
-
-    window.draw(hpBarBg);
-    window.draw(hpBar);
 }
 
 void Knight::takeDamage(int dmg) {
@@ -83,9 +84,15 @@ void Knight::respawn() {
 
 void Knight::handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies,
                           const sf::RenderWindow& window) {
-    if (!attackQueued || attackTimer < attackCooldown) return;
+    if (!attackQueued) return;
 
-    // Wyzwolenie animacji niezależnie od trafienia
+    // Poczekaj na cooldown
+    if (attackTimer < attackCooldown)
+        return;
+
+    std::cout << "[INFO] Wykonuję atak!\n";
+
+    // losowa animacja
     int r = rand() % 4;
     sprite.setTexture(attackTex[r]);
     switchState(KnightState::Attack);
@@ -93,34 +100,49 @@ void Knight::handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies,
     animationTimer = 0.f;
     attackTimer = 0.f;
 
-    // Szukaj wroga do trafienia (opcjonalne)
+    // zadaj obrażenia tylko JEDNEMU wrogowi w zasięgu
     for (auto& enemy : enemies) {
-        if (enemy->isDead()) continue;
-
-        float dist = std::hypot(enemy->getPosition().x - sprite.getPosition().x,
-                                enemy->getPosition().y - sprite.getPosition().y);
-
-        if (dist <= range) {
-            enemy->takeDamage(damage);
-            break; // traf tylko jednego
+        if (!enemy->isDead()) {
+            float dist = std::hypot(enemy->getPosition().x - sprite.getPosition().x,
+                                    enemy->getPosition().y - sprite.getPosition().y);
+            if (dist <= range) {
+                enemy->takeDamage(damage);
+                std::cout << "[HIT] Zadałem obrażenia!\n";
+                break;
+            }
         }
     }
 
-    attackQueued = false;
+    attackQueued = false;  // zresetuj dopiero po pełnym ataku
 }
+
 
 
 
 void Knight::updateAnimation(float deltaTime) {
     animationTimer += deltaTime;
+
     if (animationTimer >= frameTime) {
-        currentFrame = (currentFrame + 1) % frameCount;
-        sprite.setTextureRect({
-            currentFrame * frameSize.x, 0, frameSize.x, frameSize.y
-        });
+        if (state == KnightState::Dead) {
+            // Zatrzymaj animację na ostatniej klatce
+            if (currentFrame < frameCount - 1) {
+                currentFrame++;
+                sprite.setTextureRect({
+                    currentFrame * frameSize.x, 0, frameSize.x, frameSize.y
+                });
+            }
+            // Nie resetuj currentFrame — pozostanie na ostatniej klatce
+        } else {
+            currentFrame = (currentFrame + 1) % frameCount;
+            sprite.setTextureRect({
+                currentFrame * frameSize.x, 0, frameSize.x, frameSize.y
+            });
+        }
+
         animationTimer = 0.f;
     }
 }
+
 
 void Knight::switchState(KnightState newState) {
     state = newState;
@@ -179,7 +201,7 @@ void Knight::updateTexture() {
 
     case KnightState::Walk:
         newTexture = &walk1Tex;
-        frameCount = 8;
+        frameCount = 7;
         frameSize = {100, 64};  // np. 512x64
         break;
 

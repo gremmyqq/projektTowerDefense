@@ -1,6 +1,5 @@
 #include "GameEngine.h"
 #include <stdexcept>
-#include <iostream>
 #include "Archer.h"
 #include "Knight.h"
 #include "Mage.h"
@@ -32,8 +31,19 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         startButtonTexture.getSize().x / 2.f,
         startButtonTexture.getSize().y / 2.f
         );
-    startButtonSprite.setPosition(window.getSize().x - 100.f, window.getSize().y - 100.f);
+    startButtonSprite.setPosition(window.getSize().x - 100.f, window.getSize().y - 150.f);
 
+    if (!shopButtonTexture.loadFromFile("assets/shop.png")) {
+        throw std::runtime_error("Nie można załadować start_button.bmp");
+    }
+    shopButtonSprite.setTexture(shopButtonTexture);
+    shopButtonSprite.setScale(0.09f, 0.09f);
+    shopButtonSprite.setOrigin(
+        shopButtonTexture.getSize().x / 2.f,
+        shopButtonTexture.getSize().y / 2.f
+
+        );
+    shopButtonSprite.setPosition(window.getSize().x - 100.f, window.getSize().y - 225.f);
     if (!levelLoader.loadFromFile("assets/levels.txt")) {
         throw std::runtime_error("Nie można załadować levels.txt");
     }
@@ -199,7 +209,7 @@ void GameEngine::render() {
 
     if (selectedField)
         shop.draw(window);
-
+    window.draw(shopButtonSprite);
     window.draw(startButtonSprite);
     window.display();
 }
