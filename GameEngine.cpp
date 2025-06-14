@@ -137,6 +137,10 @@ void GameEngine::update(float deltaTime) {
             if (spawn.pathIndex >= 0 && spawn.pathIndex < static_cast<int>(allPaths.size())) {
                 if (spawn.type == " Regular") {
                     enemies.emplace_back(std::make_unique<EnemyRegular>(allPaths[spawn.pathIndex]));
+                } else if (spawn.type == " Fast") {
+                    enemies.emplace_back(std::make_unique<EnemyFast>(allPaths[spawn.pathIndex]));
+                } else if (spawn.type == " Tank") {
+                    enemies.emplace_back(std::make_unique<EnemyTank>(allPaths[spawn.pathIndex]));
                 }
             }
 

@@ -6,6 +6,8 @@
 #include <vector>
 #include <iostream>
 #include "EnemyRegular.h"
+#include "EnemyFast.h"
+#include "EnemyTank.h"
 #include "Shop.h"
 #include "Field.h"
 #include "HeroBase.h"

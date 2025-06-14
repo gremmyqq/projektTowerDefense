@@ -5,12 +5,31 @@
 #include <cmath>
 #include "Herobase.h"  // dodaj na górze jeśli brak
 
-Enemy::Enemy(const std::vector<sf::Vector2f>& path)
-    : path(path), currentTargetIndex(0) {
+#include <cstdlib> // dla std::rand()
+#include <ctime>   // dla std::time()
+
+Enemy::Enemy(const std::vector<sf::Vector2f>& originalPath)
+    : currentTargetIndex(0) {
+
+    // Jednorazowa inicjalizacja generatora
+    static bool seeded = false;
+    if (!seeded) {
+        std::srand(static_cast<unsigned>(std::time(nullptr)));
+        seeded = true;
+    }
+
+    // Losowe przesunięcie każdego waypointa
+    for (const auto& point : originalPath) {
+        float offsetX = static_cast<float>(std::rand() % 31 - 15); // -15 do +15
+        float offsetY = static_cast<float>(std::rand() % 31 - 15); // -15 do +15
+        path.emplace_back(point.x + offsetX, point.y + offsetY);
+    }
+
     if (!path.empty()) {
         position = path[0];
     }
 }
+
 
 void Enemy::takeDamage(int damage) {
     health -= damage;
@@ -101,9 +120,12 @@ void Enemy::updateAnimation(float deltaTime) {
 
 
 void Enemy::startAttack() {
-    state = EnemyState::Attacking;
-    currentFrame = 0;
-    animationTimer = 0.f;
+    if (canAttack==true) {
+        state = EnemyState::Attacking;
+        currentFrame = 0;
+        animationTimer = 0.f;
+    }
+
 }
 
 void Enemy::die() {

@@ -15,13 +15,13 @@ Field::Field(const sf::Vector2f& position)
     shape.setFillColor(sf::Color::Transparent);
 
     if (fieldTexture.getSize().x == 0) {
-        if (!fieldTexture.loadFromFile("assets/field_transparent.png")) {
+        if (!fieldTexture.loadFromFile("assets/field.png")) {
             std::cerr << "Nie można załadować assets/field.png\n";
         }
     }
 
     fieldSprite.setTexture(fieldTexture);
-    fieldSprite.setTextureRect(sf::IntRect(0, 0, 64, 64));
+    fieldSprite.setTextureRect(sf::IntRect(0, 0, 70, 130));
     fieldSprite.setOrigin(32.f, 32.f);
     fieldSprite.setPosition(position);
 

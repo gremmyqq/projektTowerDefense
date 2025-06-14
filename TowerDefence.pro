@@ -15,6 +15,8 @@ INSTALLS += assets
 SOURCES += \
         Archer.cpp \
         Castle.cpp \
+        EnemyFast.cpp \
+        EnemyTank.cpp \
         Field.cpp \
         GameEngine.cpp \
         HeroBase.cpp \
@@ -31,7 +33,9 @@ HEADERS += \
         Archer.h \
         Castle.h \
         Enemy.h \
+        EnemyFast.h \
         EnemyRegular.h \
+        EnemyTank.h \
         Field.h \
         GameEngine.h \
         HeroBase.h \
