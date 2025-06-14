@@ -15,13 +15,16 @@ INSTALLS += assets
 SOURCES += \
         Archer.cpp \
         Castle.cpp \
-        Field.cpp \
+        EmptyField.cpp \
+        EnemyFast.cpp \
+        EnemyTank.cpp \
         GameEngine.cpp \
+        GeneratorField.cpp \
         HeroBase.cpp \
         Knight.cpp \
         LevelLoader.cpp \
         Shop.cpp \
-        Tower.cpp \
+        TowerField.cpp \
         mage.cpp \
         main.cpp \
         Enemy.cpp \
@@ -29,14 +32,19 @@ SOURCES += \
 
 HEADERS += \
         Archer.h \
+        BuildType.h \
         Castle.h \
+        EmptyField.h \
         Enemy.h \
+        EnemyFast.h \
         EnemyRegular.h \
+        EnemyTank.h \
         Field.h \
         GameEngine.h \
+        GeneratorField.h \
         HeroBase.h \
         Knight.h \
         LevelLoader.h \
         Shop.h \
-        Tower.h \
+        TowerField.h \
         mage.h

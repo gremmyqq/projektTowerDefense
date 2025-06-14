@@ -58,9 +58,11 @@ protected:
     enum class EnemyState {
         Walking,
         Attacking,
-        Dying
+        Dying,
+        Special1,
+        Special2
     };
-
+    bool canAttack=true;
     EnemyState state = EnemyState::Walking;
 
     void moveTowardsTarget(float deltaTime);
@@ -70,7 +72,7 @@ protected:
     float attackCooldown = 1.0f;
     float attackTimer = 0.0f;
     float attackRange = 50.0f;
-    int attackDamage = 20;
+    int attackDamage = 10;
 
 
 };

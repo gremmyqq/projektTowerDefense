@@ -4,7 +4,7 @@
 int main() {
     // Tryb pełnoekranowy
     sf::VideoMode desktop = sf::VideoMode::getDesktopMode();
-    sf::RenderWindow window(desktop, "Tower Defense");
+    sf::RenderWindow window(desktop, "Tower Defense", sf::Style::Fullscreen);  // <-- ta linia
 
     GameEngine engine(window);
     engine.run();

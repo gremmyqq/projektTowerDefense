@@ -5,46 +5,16 @@
 #include <vector>
 #include <memory>
 #include "Enemy.h"
-
-enum class FieldType {
-    Empty,
-    Tower,
-    Generator
-};
+#include "BuildType.h"
+class GameEngine;
 
 class Field {
 public:
-    Field(const sf::Vector2f& position);
-
-    void update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies);
-    void draw(sf::RenderWindow& window);
-
-    void handleClick(const sf::Vector2f& mousePos); // kliknięcie myszką
-    bool contains(const sf::Vector2f& point) const;
-    void buildTower();
-    void buildGenerator();
-    FieldType getType() const { return type; }
-
-private:
-    sf::RectangleShape shape;
-    FieldType type;
-
-    static sf::Texture fieldTexture; // ← współdzielona
-    sf::Sprite fieldSprite;
-
-    // --- tylko dla wieży
-    float attackCooldown;
-    float timeSinceLastAttack;
-    float range;
-    int damage;
-
-    // --- tylko dla generatora
-    float resourceTimer;
-    float resourceInterval;
-    int* resourceCount; // wskaźnik na licznik surowców
-
-    void attackEnemies(std::vector<std::unique_ptr<Enemy>>& enemies);
-    void generateResources();
+    virtual ~Field() = default;
+    virtual void update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies) = 0;
+    virtual void draw(sf::RenderWindow& window) = 0;
+    virtual bool contains(const sf::Vector2f& point) const = 0;
+    virtual void handleClick(BuildType selectedType, GameEngine& engine) = 0;
 };
 
 #endif

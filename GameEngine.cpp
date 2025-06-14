@@ -64,13 +64,18 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     shop.setGoldPointer(&playerResources);
 
     shop.addItem("Wieża", 50, [this]() {
-        if (selectedField) selectedField->buildTower();
-        selectedField = nullptr;
+        if (selectedField) {
+            selectedBuildType = BuildType::Tower;
+            // handleClick() zrobi resztę w następnym kliknięciu
+        }
+
     });
 
     shop.addItem("Generator", 30, [this]() {
-        if (selectedField) selectedField->buildGenerator();
-        selectedField = nullptr;
+        if (selectedField) {
+            selectedBuildType = BuildType::Generator;
+        }
+
     });
 
     shop.addItem("Ulepsz zamek", 100, [this]() {
@@ -79,8 +84,8 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    fields.emplace_back(sf::Vector2f(window.getSize().x * 0.3f, window.getSize().y * 0.3f));
-    fields.emplace_back(sf::Vector2f(window.getSize().x * 0.5f, window.getSize().y * 0.3f));
+    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.3f, window.getSize().y * 0.3f)));
+    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.5f, window.getSize().y * 0.3f)));
 
     initHeroSelectionUI();
 }
@@ -121,12 +126,8 @@ void GameEngine::handleEvents() {
 
             selectedField = nullptr;
             for (auto& field : fields) {
-                if (field.contains(mousePos)) {
-                    if (field.getType() == FieldType::Empty)
-                        selectedField = &field;
-                    field.handleClick(mousePos);
-                    break;
-                }
+                field->handleClick(selectedBuildType, *this);
+
             }
 
             shop.handleClick(mousePos);
@@ -147,6 +148,10 @@ void GameEngine::update(float deltaTime) {
             if (spawn.pathIndex >= 0 && spawn.pathIndex < static_cast<int>(allPaths.size())) {
                 if (spawn.type == " Regular") {
                     enemies.emplace_back(std::make_unique<EnemyRegular>(allPaths[spawn.pathIndex]));
+                } else if (spawn.type == " Fast") {
+                    enemies.emplace_back(std::make_unique<EnemyFast>(allPaths[spawn.pathIndex]));
+                } else if (spawn.type == " Tank") {
+                    enemies.emplace_back(std::make_unique<EnemyTank>(allPaths[spawn.pathIndex]));
                 }
             }
 
@@ -175,7 +180,7 @@ void GameEngine::update(float deltaTime) {
 
 
     for (auto& field : fields)
-        field.update(deltaTime, enemies);
+        field->update(deltaTime, enemies);
 
     castle.update();
 
@@ -197,7 +202,7 @@ void GameEngine::render() {
     castle.draw(window);
 
     for (auto& field : fields)
-        field.draw(window);
+        field->draw(window);
 
     for (auto& enemy : enemies)
         enemy->draw(window);
@@ -284,3 +289,13 @@ void GameEngine::handleHeroSelectionClick(const sf::Vector2f& mousePos) {
         break;
     }
 }
+
+void GameEngine::replaceField(Field* oldField, std::unique_ptr<Field> newField) {
+    auto it = std::find_if(fields.begin(), fields.end(),
+                           [oldField](const std::unique_ptr<Field>& f) { return f.get() == oldField; });
+
+    if (it != fields.end()) {
+        *it = std::move(newField);
+    }
+}
+
