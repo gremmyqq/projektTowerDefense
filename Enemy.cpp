@@ -3,7 +3,7 @@
 //
 #include "Enemy.h"
 #include <cmath>
-#include "Herobase.h"  // dodaj na górze jeśli brak
+#include "HeroBase.h"  // dodaj na górze jeśli brak
 
 #include <cstdlib> // dla std::rand()
 #include <ctime>   // dla std::time()

@@ -63,6 +63,9 @@ private:
     //przycisk start rundy
     sf::Texture startButtonTexture;
     sf::Sprite startButtonSprite;
+
+    sf::Texture shopButtonTexture;
+    sf::Sprite shopButtonSprite;
     bool roundActive = false;
 
     // Ścieżka dla wrogów
