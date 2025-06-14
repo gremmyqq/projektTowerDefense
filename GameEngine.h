@@ -16,18 +16,26 @@
 #include "Mage.h"
 #include "Castle.h"
 #include "LevelLoader.h"
+#include "EmptyField.h"
+#include "TowerField.h"
+#include "GeneratorField.h"
 
 class GameEngine {
 public:
     explicit GameEngine(sf::RenderWindow& window);
     void run();
 
+    void setSelectedBuildType(BuildType type) {
+        selectedBuildType = type;
+    }
+    void replaceField(Field* oldField, std::unique_ptr<Field> newField);
+
 private:
     sf::RenderWindow& window;
 
     // Komponenty gry
     std::vector<std::unique_ptr<Enemy>> enemies;
-    std::vector<Field> fields;
+    std::vector<std::unique_ptr<Field>> fields;
     std::unique_ptr<HeroBase> hero;
     Field* selectedField = nullptr;
     Shop shop;
@@ -71,6 +79,11 @@ private:
         Mage
     };
     HeroType selectedHeroType = HeroType::None;
+
+    BuildType selectedBuildType = BuildType::None;
+
+
+
 
     sf::RectangleShape archerBtn, knightBtn, mageBtn;
     sf::Text archerText, knightText, mageText;
