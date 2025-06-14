@@ -10,7 +10,7 @@ TowerField::TowerField(const sf::Vector2f& pos) {
 
 void TowerField::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies) {
     timeSinceLastAttack += deltaTime;
-    attackEnemies(enemies);
+    attack(enemies);
 }
 
 void TowerField::draw(sf::RenderWindow& window) {
@@ -26,7 +26,7 @@ void TowerField::handleClick(BuildType selectedType, GameEngine& engine) {
 }
 
 
-void TowerField::attackEnemies(std::vector<std::unique_ptr<Enemy>>& enemies) {
+void TowerField::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
     for (auto& enemy : enemies) {
         if (enemy->isDead()) continue;
 

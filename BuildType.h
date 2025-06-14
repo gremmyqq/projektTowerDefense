@@ -3,8 +3,8 @@
 
 enum class BuildType {
     None,
-    Tower,
-    Generator
+    Generator,
+    TowerArcher
 };
 
 #endif

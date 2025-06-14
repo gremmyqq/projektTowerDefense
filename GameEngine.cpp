@@ -53,9 +53,9 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     shop.setPosition({20.f, 500.f});
     shop.setGoldPointer(&playerResources);
 
-    shop.addItem("Wieża", 50, [this]() {
+    shop.addItem("Wieża Archer", 50, [this]() {
         if (selectedField) {
-            selectedBuildType = BuildType::Tower;
+            selectedBuildType = BuildType::TowerArcher;
             // handleClick() zrobi resztę w następnym kliknięciu
         }
 

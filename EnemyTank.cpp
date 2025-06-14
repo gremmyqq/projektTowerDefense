@@ -7,6 +7,8 @@ EnemyTank::EnemyTank(const std::vector<sf::Vector2f>& path)
     health = maxHealth;
     speed = 60;
 
+    attackDamage = 0;
+
     texture.loadFromFile("assets/enemy_tank.png");
     sprite.setTexture(texture);
     frameWidth = 48;

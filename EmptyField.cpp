@@ -1,4 +1,5 @@
 #include "EmptyField.h"
+#include "TowerArcher.h"
 #include "TowerField.h"
 #include "GeneratorField.h"
 #include <iostream>
@@ -27,9 +28,10 @@ bool EmptyField::contains(const sf::Vector2f& point) const {
 }
 
 void EmptyField::handleClick(BuildType selectedType, GameEngine& engine) {
-    if (selectedType == BuildType::Tower) {
-        engine.replaceField(this, std::make_unique<TowerField>(fieldSprite.getPosition()));
-    } else if (selectedType == BuildType::Generator) {
+    if (selectedType == BuildType::Generator) {
         engine.replaceField(this, std::make_unique<GeneratorField>(fieldSprite.getPosition()));
+    } else if (selectedType == BuildType::TowerArcher) {
+        engine.replaceField(this, std::make_unique<TowerArcher>(fieldSprite.getPosition()));
     }
+
 }

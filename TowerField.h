@@ -13,14 +13,14 @@ public:
     bool contains(const sf::Vector2f& point) const override;
     void handleClick(BuildType, GameEngine&) override;
 
-private:
+protected:
+    virtual void attack(std::vector<std::unique_ptr<Enemy>>& enemies);
     sf::RectangleShape shape;
     float attackCooldown = 1.0f;
     float timeSinceLastAttack = 0.0f;
     float range = 100.f;
     int damage = 15;
 
-    void attackEnemies(std::vector<std::unique_ptr<Enemy>>& enemies);
 };
 
 #endif
