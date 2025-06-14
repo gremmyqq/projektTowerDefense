@@ -84,6 +84,19 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
+    shop.addItem("Ulepsz wieżę", 100, [this]() {
+        if (selectedField) {
+            // spróbuj zrzutować na TowerArcher
+            TowerArcher* archer = dynamic_cast<TowerArcher*>(selectedField);
+            if (archer) {
+                archer->upgrade();
+            } else {
+                std::cout << "To pole nie jest wieżą typu TowerArcher!\n";
+            }
+            selectedField = nullptr;
+        }
+    });
+
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.3f, window.getSize().y * 0.3f)));
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.5f, window.getSize().y * 0.3f)));
 
@@ -124,11 +137,20 @@ void GameEngine::handleEvents() {
 
             if (!hero) return;
 
-            selectedField = nullptr;
-            for (auto& field : fields) {
-                field->handleClick(selectedBuildType, *this);
+            bool clickedOnField = false;
 
+            for (auto& field : fields) {
+                if (field->contains(mousePos)) {
+                    selectedField = field.get();  // ← TO DODAJ
+                    clickedOnField = true;
+                }
+                field->handleClick(selectedBuildType, *this);
             }
+
+            if (!clickedOnField) {
+                selectedField = nullptr;  // ← kliknięcie poza polem = ukryj sklep
+            }
+
 
             shop.handleClick(mousePos);
         }
