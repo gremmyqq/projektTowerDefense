@@ -6,9 +6,9 @@
 
 enum class MageState {
     Idle,
+    Walk,         // <- dodany nowy stan
     Run,
     Attack,
-    ExtraAttack,
     Dead
 };
 
@@ -30,12 +30,14 @@ protected:
 
     void handleMovement(float deltaTime) override;
     void updateAnimation(float deltaTime) override;
-    void queueAttack() override;
+
+    void queueAttack() override { attackQueued = true; }
+    void queueExtraAttack() override { extraAttackQueued = true; }
 
     // Animacja i stany
     MageState state = MageState::Idle;
 
-    sf::Texture idleTex, runTex, attackTex, extraAttackTex, deathTex;
+    sf::Texture idleTex, walkTex, runTex, attackTex, deathTex;
 
     int frameCount = 6;
     int currentFrame = 0;
@@ -45,9 +47,9 @@ protected:
 
     void switchState(MageState newState);
     void updateTexture();
+
     bool normalAttackQueued = false;
     bool extraAttackQueued = false;
-
 };
 
 #endif // MAGE_H

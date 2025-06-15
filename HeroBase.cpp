@@ -39,20 +39,7 @@ sf::Vector2f HeroBase::getPosition() const {
     return sprite.getPosition();
 }
 
-void HeroBase::handleMovement(float deltaTime) {
-    sf::Vector2f moveDir(0.f, 0.f);
 
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) moveDir.y -= 1.f;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) moveDir.y += 1.f;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) moveDir.x -= 1.f;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) moveDir.x += 1.f;
-
-    if (moveDir.x != 0.f || moveDir.y != 0.f) {
-        float len = std::sqrt(moveDir.x * moveDir.x + moveDir.y * moveDir.y);
-        moveDir /= len;
-        sprite.move(moveDir * speed * deltaTime);
-    }
-}
 
 void HeroBase::queueAttack() {
     attackQueued = true;

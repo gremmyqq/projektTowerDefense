@@ -51,6 +51,7 @@ protected:
     void updateTexture();
     void handleMovement(float deltaTime) override;
     void queueAttack() override;
+    void queueExtraAttack() override { /* może pusta implementacja */ }
 
 };
 

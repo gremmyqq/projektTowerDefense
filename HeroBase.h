@@ -20,7 +20,8 @@ public:
     virtual void takeDamage(int dmg);
     virtual bool isDead() const;
     virtual void respawn();
-    virtual void queueAttack(); // nowa funkcja
+    virtual void queueAttack() = 0;
+    virtual void queueExtraAttack() = 0;    // nowa funkcja
     sf::Vector2f getPosition() const;
     void upgrade();
 
@@ -56,7 +57,7 @@ protected:
     float dashSpeed = 400.f;
 
     // Metody wirtualne pomocnicze (dla podklas)
-    virtual void handleMovement(float deltaTime);
+    virtual void handleMovement(float deltaTime) = 0;
     virtual void handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies,
                               const sf::RenderWindow& window) = 0;
     virtual void updateAnimation(float deltaTime) = 0;

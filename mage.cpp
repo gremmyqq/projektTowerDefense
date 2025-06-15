@@ -9,19 +9,25 @@ Mage::Mage(const sf::Vector2f& spawnPoint, const sf::Texture& texture)
     damage = 25;
     range = 200.f;
     attackCooldown = 1.2f;
+    attackTimer = 0.f;
+    level = 1;
+
+    frameSize = {128, 128};
+    frameTime = 0.15f;
 
     // Ładowanie tekstur animacji
-    idleTex.loadFromFile("assets/image.png");
-    runTex.loadFromFile("assets/rmage.png");
-    attackTex.loadFromFile("assets/amage.png");
-    extraAttackTex.loadFromFile("assets/eamage.png");
-    deathTex.loadFromFile("assets/dmage.png");
+    if (!idleTex.loadFromFile("assets/Idle.png") ||
+        !walkTex.loadFromFile("assets/Walk.png") ||
+        !runTex.loadFromFile("assets/Run.png") ||
+        !attackTex.loadFromFile("assets/Attack_1.png") ||
+        !deathTex.loadFromFile("assets/Dead.png")) {
+        throw std::runtime_error("Nie można załadować tekstur maga.");
+    }
 
     sprite.setTexture(idleTex);
     sprite.setTextureRect({0, 0, frameSize.x, frameSize.y});
     sprite.setPosition(spawnPoint);
     sprite.setOrigin(frameSize.x / 2.f, frameSize.y / 2.f);
-
 }
 
 void Mage::update(float deltaTime, const sf::RenderWindow& window,
@@ -31,12 +37,15 @@ void Mage::update(float deltaTime, const sf::RenderWindow& window,
         return;
     }
 
-
     handleMovement(deltaTime);
     attackTimer += deltaTime;
     handleAttack(enemies, window);
     updateHpBar();
     updateAnimation(deltaTime);
+
+    // 🔧 automatyczne wyjście ze stanu Attack po zakończeniu animacji
+    if (state == MageState::Attack && currentFrame >= frameCount - 1 && animationTimer == 0.f)
+        switchState(MageState::Idle);
 }
 
 void Mage::handleMovement(float deltaTime) {
@@ -50,8 +59,16 @@ void Mage::handleMovement(float deltaTime) {
     if (moveDir.x != 0.f || moveDir.y != 0.f) {
         float len = std::sqrt(moveDir.x * moveDir.x + moveDir.y * moveDir.y);
         moveDir /= len;
-        sprite.move(moveDir * speed * deltaTime);
-        switchState(MageState::Run);
+
+        float moveSpeed = speed;
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
+            moveSpeed *= 1.5f;
+            switchState(MageState::Run);
+        } else {
+            switchState(MageState::Walk);
+        }
+
+        sprite.move(moveDir * moveSpeed * deltaTime);
     } else {
         switchState(MageState::Idle);
     }
@@ -59,11 +76,13 @@ void Mage::handleMovement(float deltaTime) {
 
 void Mage::handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies,
                         const sf::RenderWindow& window) {
-    if (attackTimer < attackCooldown)
-        return;
+    if (!attackQueued) return;
+    if (attackTimer < attackCooldown) return;
 
-    if (normalAttackQueued) {
+
         switchState(MageState::Attack);
+        currentFrame = 0;
+        animationTimer = 0.f;
         attackTimer = 0.f;
 
         for (auto& enemy : enemies) {
@@ -72,38 +91,18 @@ void Mage::handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies,
                                         enemy->getPosition().y - sprite.getPosition().y);
                 if (dist <= range) {
                     enemy->takeDamage(damage);
+                    std::cout << "[HIT] Zadałem obrażenia!\n";
                     break;
                 }
             }
         }
-        normalAttackQueued = false;
-    }
+        attackQueued = false;
 
-    if (extraAttackQueued) {
-        switchState(MageState::ExtraAttack);
-        attackTimer = 0.f;
-
-        for (auto& enemy : enemies) {
-            if (!enemy->isDead()) {
-                float dist = std::hypot(enemy->getPosition().x - sprite.getPosition().x,
-                                        enemy->getPosition().y - sprite.getPosition().y);
-                if (dist <= range) {
-                    enemy->takeDamage(damage * 2);
-                    break;
-                }
-            }
-        }
-        extraAttackQueued = false;
-    }
 }
 
-
-
 void Mage::draw(sf::RenderWindow& window) {
-    // Zawsze rysuj sprite — nawet w stanie Dead
     window.draw(sprite);
 
-    // Rysuj pasek HP tylko, gdy Mage żyje
     if (!isDead()) {
         sf::Vector2f spritePos = sprite.getPosition();
         hpBarBg.setPosition(spritePos.x - 20.f, spritePos.y - 30.f);
@@ -113,7 +112,6 @@ void Mage::draw(sf::RenderWindow& window) {
         window.draw(hpBar);
     }
 }
-
 
 void Mage::takeDamage(int dmg) {
     hp -= dmg;
@@ -134,7 +132,6 @@ void Mage::respawn() {
     switchState(MageState::Idle);
 }
 
-
 void Mage::switchState(MageState newState) {
     if (state == newState) return;
     state = newState;
@@ -146,58 +143,28 @@ void Mage::switchState(MageState newState) {
 void Mage::updateTexture() {
     switch (state) {
     case MageState::Idle:
-        sprite.setTexture(idleTex);
-        frameCount = 6;
-        break;
+        sprite.setTexture(idleTex); frameCount = 6; break;
+    case MageState::Walk:
+        sprite.setTexture(walkTex); frameCount = 7; break;
     case MageState::Run:
-        sprite.setTexture(runTex);
-        frameCount = 6;
-        break;
+        sprite.setTexture(runTex); frameCount = 8; break;
     case MageState::Attack:
-        sprite.setTexture(attackTex);
-        frameCount = 10;
-        break;
-    case MageState::ExtraAttack:
-        sprite.setTexture(extraAttackTex);
-        frameCount = 14;
-        break;
+        sprite.setTexture(attackTex); frameCount = 10; break;
     case MageState::Dead:
-        sprite.setTexture(deathTex);
-        frameCount = 17;
-        break;
+        sprite.setTexture(deathTex); frameCount = 4; break;
+// użycie tej samej animacji
     }
     sprite.setTextureRect({0, 0, frameSize.x, frameSize.y});
 }
 
 void Mage::updateAnimation(float deltaTime) {
     animationTimer += deltaTime;
-
     if (animationTimer >= frameTime) {
         animationTimer = 0.f;
-
-        if (state == MageState::Dead) {
-            // Zatrzymaj się na ostatniej klatce
-            if (currentFrame < frameCount - 1) {
-                currentFrame++;
-                sprite.setTextureRect({currentFrame * frameSize.x, 0, frameSize.x, frameSize.y});
-            }
-            // jeśli już osiągnął ostatnią klatkę — nie rób nic
-        } else {
-            currentFrame = (currentFrame + 1) % frameCount;
-            sprite.setTextureRect({currentFrame * frameSize.x, 0, frameSize.x, frameSize.y});
+        if (state == MageState::Dead && currentFrame >= frameCount - 1) {
+            return;
         }
+        currentFrame = (currentFrame + 1) % frameCount;
+        sprite.setTextureRect({currentFrame * frameSize.x, 0, frameSize.x, frameSize.y});
     }
 }
-void Mage::queueAttack() {
-    std::cout << "Mage::queueAttack()\n";
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-        std::cout << "Lewy klik wykryty!\n";
-        normalAttackQueued = true;
-    }
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Right)) {
-        std::cout << "Prawy klik wykryty!\n";
-        extraAttackQueued = true;
-    }
-}
-
-

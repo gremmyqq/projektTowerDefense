@@ -188,7 +188,14 @@ void GameEngine::handleEvents() {
             (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)) {
             window.close();
         }
-
+        if (event.type == sf::Event::MouseButtonPressed) {
+            if (hero) {
+                if (event.mouseButton.button == sf::Mouse::Left)
+                    hero->queueAttack();
+                if (event.mouseButton.button == sf::Mouse::Right)
+                    hero->queueExtraAttack();
+            }
+        }
         if (event.type == sf::Event::MouseButtonPressed &&
             event.mouseButton.button == sf::Mouse::Left) {
             sf::Vector2f mousePos = window.mapPixelToCoords(
@@ -215,13 +222,6 @@ void GameEngine::handleEvents() {
             if (shop.isVisible()) {
                 shop.handleClick(mousePos);
                 return;
-            }
-
-
-
-            //handleHeroSelectionClick(mousePos);
-            if (hero) {
-                hero->queueAttack();
             }
 
             if (!hero) return;
