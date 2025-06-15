@@ -58,3 +58,10 @@ void HeroBase::queueAttack() {
     attackQueued = true;
 }
 
+void HeroBase::upgrade() {
+    level++;
+    maxHp += 20;
+    damage += 5;
+    range += 10.f;
+    hp = maxHp;
+}

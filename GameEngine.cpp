@@ -62,11 +62,12 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     shop.setFont(uiFont);
     shop.setPosition({20.f, 500.f});
     shop.setGoldPointer(&playerResources);
+  // zamiast playerResources
 
     shop.addItem("Wieża", 50, [this]() {
         if (selectedField) {
             selectedBuildType = BuildType::Tower;
-            // handleClick() zrobi resztę w następnym kliknięciu
+            //handleClick() zrobi resztę w następnym kliknięciu
         }
 
     });
@@ -83,11 +84,76 @@ GameEngine::GameEngine(sf::RenderWindow& window)
             castle.upgrade();
         }
     });
+    shop.addItem("Kup Rycerza", 300, [this]() {
+        if (!hero) {
+            hero = std::make_unique<Knight>(sf::Vector2f(400.f, 500.f), heroTexture);
+        }
+    });
+
+    shop.addItem("Kup Łucznika", 300, [this]() {
+        if (!hero) {
+            hero = std::make_unique<Archer>(sf::Vector2f(400.f, 500.f), heroTexture);
+        }
+    });
+
+    shop.addItem("Kup Maga", 300, [this]() {
+        if (!hero) {
+            hero = std::make_unique<Mage>(sf::Vector2f(400.f, 500.f), heroTexture);
+        }
+    });
+
+    shop.addItem("Ulepsz bohatera", 200, [this]() {
+        if (hero) {
+            hero->upgrade();  // dodaj tę metodę do Knight/Archer/Mage
+        }
+    });
 
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.3f, window.getSize().y * 0.3f)));
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.5f, window.getSize().y * 0.3f)));
 
-    initHeroSelectionUI();
+    //initHeroSelectionUI();
+    const std::string tilePaths[3] = {
+        "assets/Tile_01.png",
+        "assets/Tile_02.png",
+        "assets/Tile_03.png"
+    };
+
+    float totalWidth = 50.f;
+
+    for (int i = 0; i < 3; ++i) {
+        if (!cornerTileTextures[i].loadFromFile(tilePaths[i])) {
+            throw std::runtime_error("Nie można załadować " + tilePaths[i]);
+        }
+        cornerTileSprites[i].setTexture(cornerTileTextures[i]);
+
+        // Opcjonalnie skalowanie (np. zmniejsz o połowę)
+        cornerTileSprites[i].setScale(4.f, 5.f);
+
+        totalWidth += cornerTileTextures[i].getSize().x * cornerTileSprites[i].getScale().x;
+    }
+
+    // Ustaw pozycje tak, by kafelki były od prawej krawędzi do lewej
+    float startX = window.getSize().x - 600.f;
+    for (int i = 0; i < 3; ++i) {
+        float x = startX;
+        for (int j = 0; j < i; ++j) {
+            x += cornerTileTextures[j].getSize().x * cornerTileSprites[j].getScale().x;
+        }
+        cornerTileSprites[i].setPosition(x, 28.f);
+    }
+    if (!coinTexture.loadFromFile("assets/2.png")) {
+        throw std::runtime_error("Nie można załadować assets/2.png");
+    }
+    coinSprite.setTexture(coinTexture);
+    coinSprite.setTextureRect(sf::IntRect(0, 0, 16, 16));  // pierwsza klatka
+    coinSprite.setScale(2.8f, 2.8f);  // powiększenie
+    coinSprite.setPosition(window.getSize().x - 470.f, 44.f); // prawy górny róg
+    goldText.setFont(uiFont);
+    goldText.setCharacterSize(24);
+    goldText.setFillColor(sf::Color::White);
+    goldText.setPosition(coinSprite.getPosition().x - 60.f, coinSprite.getPosition().y + 8.f);
+    goldText.setString(std::to_string(playerResources));
+
 }
 
 void GameEngine::run() {
@@ -112,12 +178,33 @@ void GameEngine::handleEvents() {
             event.mouseButton.button == sf::Mouse::Left) {
             sf::Vector2f mousePos = window.mapPixelToCoords(
                 sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
+            // 1. Kliknięcie START — zawsze działa pierwsze
             if (startButtonSprite.getGlobalBounds().contains(mousePos) && !roundActive) {
                 roundActive = true;
                 spawnClock = 0;
+                if (shop.isVisible()) {
+                    shop.toggleVisible();  // zamknij sklep przy starcie
+                }
+                std::cout << "Start i zamknięcie sklepu.\n";
+                return;
             }
 
-            handleHeroSelectionClick(mousePos);
+            // 2. Otwieranie/zamykanie sklepu
+            if (shopButtonSprite.getGlobalBounds().contains(mousePos)) {
+                shop.toggleVisible();
+                std::cout << "[INFO] Shop toggled: " << shop.isVisible() << "\n";
+                return;
+            }
+
+            // 3. Klikanie w sam sklep
+            if (shop.isVisible()) {
+                shop.handleClick(mousePos);
+                return;
+            }
+
+
+
+            //handleHeroSelectionClick(mousePos);
             if (hero) {
                 hero->queueAttack();
             }
@@ -130,7 +217,8 @@ void GameEngine::handleEvents() {
 
             }
 
-            shop.handleClick(mousePos);
+
+
         }
     }
 }
@@ -164,6 +252,9 @@ void GameEngine::update(float deltaTime) {
             nextSpawnIndex = 0;
             spawnClock = 0.f;
         }
+
+
+
     }
 
     for (auto& enemy : enemies)
@@ -189,7 +280,13 @@ void GameEngine::update(float deltaTime) {
             castle.takeDamage(50);
         }
     }
-
+    coinFrameTime += deltaTime;
+    if (coinFrameTime >= coinFrameDuration) {
+        coinFrame = (coinFrame + 1) % coinMaxFrames;
+        coinSprite.setTextureRect(sf::IntRect(coinFrame * 16, 0, 16, 16));
+        coinFrameTime = 0.f;
+    }
+    goldText.setString(std::to_string(playerResources));
     enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
                                  [](const std::unique_ptr<Enemy>& e) {
                                      return e->markedForDeletion || e->reachedEnd();
@@ -210,85 +307,25 @@ void GameEngine::render() {
     if (hero)
         hero->draw(window);
     else
-        drawHeroSelectionUI();
+        //drawHeroSelectionUI();
 
     if (selectedField)
         shop.draw(window);
+    if (shop.isVisible())
+        shop.draw(window);
+
+    for (int i = 0; i < 3; ++i) {
+        window.draw(cornerTileSprites[i]);
+    }
+    window.draw(coinSprite);
+    window.draw(goldText);
     window.draw(shopButtonSprite);
     window.draw(startButtonSprite);
     window.display();
 }
 
-void GameEngine::initHeroSelectionUI() {
-    const float x = 50.f;
-    const float yStart = 100.f;
-    const sf::Vector2f size(150.f, 50.f);
-    const float gap = 60.f;
 
-    archerBtn.setSize(size);
-    archerBtn.setPosition(x, yStart);
-    archerBtn.setFillColor(sf::Color(100, 100, 200));
-    archerText.setFont(uiFont);
-    archerText.setString("Archer");
-    archerText.setCharacterSize(20);
-    archerText.setFillColor(sf::Color::White);
-    archerText.setPosition(x + 10.f, yStart + 10.f);
 
-    knightBtn.setSize(size);
-    knightBtn.setPosition(x, yStart + gap);
-    knightBtn.setFillColor(sf::Color(100, 100, 200));
-    knightText.setFont(uiFont);
-    knightText.setString("Knight");
-    knightText.setCharacterSize(20);
-    knightText.setFillColor(sf::Color::White);
-    knightText.setPosition(x + 10.f, yStart + gap + 10.f);
-
-    mageBtn.setSize(size);
-    mageBtn.setPosition(x, yStart + 2 * gap);
-    mageBtn.setFillColor(sf::Color(100, 100, 200));
-    mageText.setFont(uiFont);
-    mageText.setString("Mage");
-    mageText.setCharacterSize(20);
-    mageText.setFillColor(sf::Color::White);
-    mageText.setPosition(x + 10.f, yStart + 2 * gap + 10.f);
-}
-
-void GameEngine::drawHeroSelectionUI() {
-    window.draw(archerBtn);
-    window.draw(knightBtn);
-    window.draw(mageBtn);
-    window.draw(archerText);
-    window.draw(knightText);
-    window.draw(mageText);
-}
-
-void GameEngine::handleHeroSelectionClick(const sf::Vector2f& mousePos) {
-    if (hero) return;
-
-    if (archerBtn.getGlobalBounds().contains(mousePos)) {
-        selectedHeroType = HeroType::Archer;
-    } else if (knightBtn.getGlobalBounds().contains(mousePos)) {
-        selectedHeroType = HeroType::Knight;
-    } else if (mageBtn.getGlobalBounds().contains(mousePos)) {
-        selectedHeroType = HeroType::Mage;
-    }
-
-    const sf::Vector2f spawn = {400.f, 500.f};
-
-    switch (selectedHeroType) {
-    case HeroType::Archer:
-        hero = std::make_unique<Archer>(spawn, heroTexture);
-        break;
-    case HeroType::Knight:
-        hero = std::make_unique<Knight>(spawn, heroTexture);
-        break;
-    case HeroType::Mage:
-        hero = std::make_unique<Mage>(spawn, heroTexture);
-        break;
-    default:
-        break;
-    }
-}
 
 void GameEngine::replaceField(Field* oldField, std::unique_ptr<Field> newField) {
     auto it = std::find_if(fields.begin(), fields.end(),

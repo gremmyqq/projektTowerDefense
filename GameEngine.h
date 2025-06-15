@@ -40,10 +40,13 @@ private:
     Field* selectedField = nullptr;
     Shop shop;
     sf::Font uiFont;
-    int playerResources = 100;
+    int playerResources = 1000;
+    int playerGold = 500;
+
     float spawnTimer;
     float spawnInterval;
     Castle castle;
+    bool shopVisible = false; // Dodaj do prywatnych pól klasy GameEngine
 
     //System ładowania poziomów
     LevelLoader levelLoader;
@@ -88,7 +91,7 @@ private:
 
 
 
-    sf::RectangleShape archerBtn, knightBtn, mageBtn;
+sf::RectangleShape archerBtn, knightBtn, mageBtn;
     sf::Text archerText, knightText, mageText;
 
     // Metody pomocnicze
@@ -98,7 +101,17 @@ private:
     void initHeroSelectionUI();
     void drawHeroSelectionUI();
     void handleHeroSelectionClick(const sf::Vector2f& mousePos);
-    //void spawnEnemy();
+    void spawnEnemy();
+    sf::Texture cornerTileTextures[3];
+    sf::Sprite cornerTileSprites[3];
+    sf::Texture coinTexture;
+    sf::Sprite coinSprite;
+    int coinFrame = 0;
+    float coinFrameTime = 0.f;
+    const int coinMaxFrames = 6;
+    const float coinFrameDuration = 0.1f;  // czas trwania jednej klatki
+    sf::Text goldText;
+
 };
 
 #endif // GAMEENGINE_H
