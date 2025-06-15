@@ -19,6 +19,7 @@
 #include "EmptyField.h"
 #include "TowerField.h"
 #include "GeneratorField.h"
+#include "TowerArcher.h"
 
 class GameEngine {
 public:

@@ -24,6 +24,7 @@ SOURCES += \
         Knight.cpp \
         LevelLoader.cpp \
         Shop.cpp \
+        TowerArcher.cpp \
         TowerField.cpp \
         mage.cpp \
         main.cpp \
@@ -46,5 +47,6 @@ HEADERS += \
         Knight.h \
         LevelLoader.h \
         Shop.h \
+        TowerArcher.h \
         TowerField.h \
         mage.h
