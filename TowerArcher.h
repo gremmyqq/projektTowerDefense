@@ -3,6 +3,8 @@
 
 #include "TowerField.h"
 #include <SFML/Graphics.hpp>
+#include <vector>
+#include <memory>
 
 class TowerArcher : public TowerField {
 public:
@@ -14,29 +16,29 @@ public:
     void upgrade();
     bool contains(const sf::Vector2f& point) const override;
 
-
 private:
-    sf::Texture texture;
+    sf::Texture idleTexture;
     sf::Sprite sprite;
 
     float animTimer = 0.f;
     float animInterval = 0.2f;
-    int currentFrame = 4; // idle start
-    const int frameWidth = 70;
-    const int frameHeight = 130;
+    int currentFrame = 0;
+    int frameWidth = 70;
+    int frameHeight = 130;
+    int frameCount = 1;
+
+    int level = 1;
+    int maxLevel = 8;
 
     bool isUpgrading = false;
     float upgradeTime = 0.f;
     float upgradeDuration = 1.0f;
 
-    int level = 1;
-    const int maxLevel = 8;
-
     enum class AnimationType { Idle, Upgrade };
     AnimationType currentAnim = AnimationType::Idle;
 
     void updateAnimation(float deltaTime);
-
+    void loadAnimation(AnimationType type);
 };
 
 #endif // TOWERARCHER_H

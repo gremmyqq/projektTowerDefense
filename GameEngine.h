@@ -40,6 +40,8 @@ private:
     std::unique_ptr<HeroBase> hero;
     Field* selectedField = nullptr;
     Shop shop;
+    Shop towerShop;
+
     sf::Font uiFont;
     int playerResources = 1000;
     int playerGold = 500;

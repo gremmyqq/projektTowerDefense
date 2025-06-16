@@ -5,16 +5,11 @@
 TowerArcher::TowerArcher(const sf::Vector2f& pos)
     : TowerField(pos)
 {
-    if (!texture.loadFromFile("assets/archer_all_levels.png")) {
-        std::cerr << "Nie można załadować archer_all_levels.png\n";
-    }
-
-    sprite.setTexture(texture);
     sprite.setOrigin(frameWidth / 2.f, frameHeight / 2.f);
     sprite.setPosition(pos);
-
     shape.setFillColor(sf::Color::Transparent);
-    sprite.setTextureRect(sf::IntRect(4 * frameWidth, (level - 1) * frameHeight, frameWidth, frameHeight));
+
+    loadAnimation(AnimationType::Idle);
 }
 
 void TowerArcher::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
@@ -42,8 +37,7 @@ void TowerArcher::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& e
         if (upgradeTime >= upgradeDuration) {
             isUpgrading = false;
             currentAnim = AnimationType::Idle;
-            upgradeTime = 0.f;
-            currentFrame = 4;
+            loadAnimation(currentAnim);
         }
     }
 
@@ -57,20 +51,30 @@ void TowerArcher::draw(sf::RenderWindow& window) {
 
 void TowerArcher::updateAnimation(float deltaTime) {
     animTimer += deltaTime;
-    if (animTimer >= animInterval) {
-        animTimer = 0.f;
+    if (animTimer < animInterval) return;
+    animTimer = 0.f;
 
-        int row = level - 1;
-        int startFrame = (currentAnim == AnimationType::Upgrade) ? 0 : 4;
-        int maxFrame = startFrame + 4;
+    currentFrame = (currentFrame + 1) % frameCount;
+    sprite.setTextureRect(sf::IntRect(currentFrame * frameWidth, 0, frameWidth, frameHeight));
+}
 
-        currentFrame++;
-        if (currentFrame >= maxFrame) {
-            currentFrame = startFrame;
-        }
-
-        sprite.setTextureRect(sf::IntRect(currentFrame * frameWidth, row * frameHeight, frameWidth, frameHeight));
+void TowerArcher::loadAnimation(AnimationType type) {
+    std::string path;
+    if (type == AnimationType::Idle) {
+        path = "assets/ArcherTower/2 Idle/" + std::to_string(level) + ".png";
+    } else {
+        path = "assets/ArcherTower/1 Upgrade/" + std::to_string(level) + ".png";
     }
+
+    if (!idleTexture.loadFromFile(path)) {
+        std::cerr << "[BŁĄD] Nie można załadować tekstury: " << path << "\n";
+        return;
+    }
+
+    sprite.setTexture(idleTexture);
+    frameCount = (type == AnimationType::Idle) ? 4 : 4; // zmień jeśli potrzeba
+    currentFrame = 0;
+    sprite.setTextureRect(sf::IntRect(0, 0, frameWidth, frameHeight));
 }
 
 void TowerArcher::upgrade() {
@@ -79,11 +83,12 @@ void TowerArcher::upgrade() {
         currentAnim = AnimationType::Upgrade;
         isUpgrading = true;
         upgradeTime = 0.f;
-        currentFrame = 0;
+        loadAnimation(AnimationType::Upgrade);
+    } else {
+        std::cout << "[INFO] Maksymalny poziom osiągnięty\n";
     }
 }
 
 bool TowerArcher::contains(const sf::Vector2f& point) const {
     return sprite.getGlobalBounds().contains(point);
 }
-
