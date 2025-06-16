@@ -48,7 +48,7 @@ private:
 
     float attackCooldown = 1.0f;
     float timeSinceLastAttack = 0.0f;
-    float range = 300.f;
+    float range = 250.f;
     int damage = 30;
 };
 

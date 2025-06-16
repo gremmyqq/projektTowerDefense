@@ -350,6 +350,7 @@ void GameEngine::handleEvents() {
                 selectedField = nullptr;
                 upgradeShop.toggleVisible(false);
                 buildShop.toggleVisible(false);
+                shop.toggleVisible(false);
             }
 
             shop.handleClick(mousePos);

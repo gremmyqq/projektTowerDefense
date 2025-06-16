@@ -155,8 +155,8 @@ void TowerWizard::upgrade() {
         upgradeTime = 0.f;
         loadAnimation(AnimationType::Upgrade);
         damage = static_cast<int>(damage * 1.1f);
-        range *= 1.05f;
-        attackCooldown *= 0.95f;
+        range *= 1.15f;
+        attackCooldown *= 0.9f;
     } else {
         std::cout << "[INFO] Maksymalny poziom osiągnięty\n";
     }

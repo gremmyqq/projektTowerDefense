@@ -11,7 +11,7 @@ TowerCatapult::TowerCatapult(const sf::Vector2f& pos)
     shape.setFillColor(sf::Color::Transparent);
 
     loadAnimation(AnimationType::Idle);
-    if (!arrowTexture.loadFromFile("assets/ArcherTower/arrow.png")) {
+    if (!arrowTexture.loadFromFile("assets/WizardTower/FB500-1.png")) {
         std::cerr << "[BŁĄD] Nie można załadować strzały!\n";
     }
 
@@ -153,7 +153,7 @@ void TowerCatapult::upgrade() {
         upgradeTime = 0.f;
         loadAnimation(AnimationType::Upgrade);
 
-        damage = static_cast<int>(damage * 1.1f);
+        damage = static_cast<int>(damage * 1.2f);
         range *= 1.05f;
         attackCooldown *= 0.95f;
     } else {
