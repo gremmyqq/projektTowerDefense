@@ -6,16 +6,14 @@
 
 Archer::Archer(const sf::Vector2f& spawnPoint, const sf::Texture&)
     : HeroBase(spawnPoint, sf::Texture()),
+    state(ArcherState::Idle),
     attackCooldown(0.6f),
     attackTimer(0.f),
     attackQueued(false),
     range(300.f),
     damage(30),
     speed(160.f),
-    spawnPosition(spawnPoint),
-    maxHp(100),
-    hp(maxHp),
-    state(ArcherState::Idle) {
+    spawnPosition(spawnPoint){
 
     if (!idleTex.loadFromFile("assets/archer/Idle.png") ||
         !runTex.loadFromFile("assets/archer/Run.png") ||
@@ -26,12 +24,13 @@ Archer::Archer(const sf::Vector2f& spawnPoint, const sf::Texture&)
         throw std::runtime_error("Nie mozna zaladowac tekstur Archera");
     }
 
-    switchState(ArcherState::Idle);
+    maxHp = 200;
+    hp = maxHp;
 
-    hpBarBg.setSize({40, 5});
-    hpBarBg.setFillColor(sf::Color::Red);
-    hpBar.setSize({40, 5});
-    hpBar.setFillColor(sf::Color::Green);
+    switchState(ArcherState::Idle);
+    sprite.setTextureRect({0, 0, frameSize.x, frameSize.y});
+    sprite.setOrigin(frameSize.x / 2.f, frameSize.y / 2.f);
+
 }
 
 void Archer::update(float deltaTime, const sf::RenderWindow& window,
@@ -70,15 +69,15 @@ void Archer::update(float deltaTime, const sf::RenderWindow& window,
 }
 
 void Archer::draw(sf::RenderWindow& window) {
-    if (!isDead()) {
-        window.draw(sprite);
-        hpBarBg.setPosition(sprite.getPosition().x + 38.f, sprite.getPosition().y + 30.f);
-
-
+    if (state != ArcherState::Dead) {
+        hpBarBg.setPosition(sprite.getPosition().x - 20.f, sprite.getPosition().y - 60.f);
         hpBar.setPosition(hpBarBg.getPosition());
         window.draw(hpBarBg);
         window.draw(hpBar);
     }
+
+    window.draw(sprite);
+
     for (auto& arrow : arrows)
         arrow.draw(window);
 }
@@ -117,14 +116,22 @@ void Archer::handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies,
 
     sf::Vector2f mousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
-    sprite.setTexture(attackTex);
     switchState(ArcherState::Attack);
     currentFrame = 0;
     animationTimer = 0.f;
     attackTimer = 0.f;
 
-    sf::Vector2f offset(100.f, 90.f); // dopasuj do pozycji luku
-    arrows.emplace_back(sprite.getPosition() + offset, mousePos, arrowTexture);
+    sf::Vector2f offset;
+    if (sprite.getScale().x < 0) {
+        // Odwrócony w lewo
+        offset = {-30.f, 20.f}; // dostosuj te wartości do Twojej grafiki
+    } else {
+        // Normalny (prawo)
+        offset = {30.f, 30.f};  // dostosuj te wartości do Twojej grafiki
+    }
+    sf::Vector2f spawnPos = sprite.getPosition() + offset;
+    arrows.emplace_back(spawnPos, mousePos, arrowTexture);
+
 
     attackQueued = false;
 }
@@ -149,6 +156,14 @@ void Archer::handleMovement(float deltaTime) {
 
         float currentSpeed = dashing ? dashSpeed : speed;
         sprite.move(moveDir * currentSpeed * deltaTime);
+
+        // Obracanie sprite'a względem kierunku ruchu
+        if (moveDir.x < -0.1f)
+            sprite.setScale(-1.f, 1.f);
+        else if (moveDir.x > 0.1f)
+            sprite.setScale(1.f, 1.f);
+
+        sprite.setOrigin(frameSize.x / 2.f, frameSize.y / 2.f);
 
         if (!dashing && state != ArcherState::Walk && state != ArcherState::Attack)
             switchState(ArcherState::Walk);
@@ -209,9 +224,10 @@ void Archer::updateTexture() {
         frameSize = {128, 128};
         break;
     case ArcherState::Attack:
+        tex = &attackTex;
         frameCount = 14;
         frameSize = {128, 128};
-        return;
+        break;
     case ArcherState::Dead:
         tex = &deathTex;
         frameCount = 3;
@@ -227,9 +243,8 @@ void Archer::updateTexture() {
     if (tex && sprite.getTexture() != tex)
         sprite.setTexture(*tex);
     sprite.setTextureRect({0, 0, frameSize.x, frameSize.y});
+    sprite.setOrigin(frameSize.x / 2.f, frameSize.y / 2.f);
+
 }
 
-void Archer::updateHpBar() {
-    float ratio = static_cast<float>(hp) / maxHp;
-    hpBar.setSize({40.f * ratio, 5.f});
-}
+
