@@ -7,7 +7,7 @@
 EnemyBoss::EnemyBoss(const std::vector<sf::Vector2f>& path)
     : Enemy(path)
 {
-    maxHealth = 500;
+    maxHealth = 800;
     health = maxHealth;
     speed = 100;
     attackRange = 200.f;

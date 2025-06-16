@@ -6,7 +6,7 @@
 EnemyArcher::EnemyArcher(const std::vector<sf::Vector2f>& path)
     : Enemy(path)
 {
-    maxHealth = 60;
+    maxHealth = 120;
     health = maxHealth;
     speed = 90;
 

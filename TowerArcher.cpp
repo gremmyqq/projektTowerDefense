@@ -154,6 +154,10 @@ void TowerArcher::upgrade() {
         isUpgrading = true;
         upgradeTime = 0.f;
         loadAnimation(AnimationType::Upgrade);
+
+        damage = static_cast<int>(damage * 1.1f);
+        range *= 1.05f;
+        attackCooldown *= 0.95f;
     } else {
         std::cout << "[INFO] Maksymalny poziom osiągnięty\n";
     }

@@ -11,7 +11,7 @@ TowerWizard::TowerWizard(const sf::Vector2f& pos)
     shape.setFillColor(sf::Color::Transparent);
 
     loadAnimation(AnimationType::Idle);
-    if (!arrowTexture.loadFromFile("assets/WizardTower/FB500-1.png")) {
+    if (!arrowTexture.loadFromFile("assets/WizardTower/FB500-1_purple.png")) {
         std::cerr << "[BŁĄD] Nie można załadować strzały!\n";
     }
 
@@ -30,6 +30,7 @@ void TowerWizard::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
 
         if (dist <= range && timeSinceLastAttack >= attackCooldown) {
             arrows.emplace_back(shape.getPosition(), enemy->getPosition(), arrowTexture);
+
 
             std::cout<<"strzal\n";
             timeSinceLastAttack = 0.f;
@@ -153,6 +154,9 @@ void TowerWizard::upgrade() {
         isUpgrading = true;
         upgradeTime = 0.f;
         loadAnimation(AnimationType::Upgrade);
+        damage = static_cast<int>(damage * 1.1f);
+        range *= 1.05f;
+        attackCooldown *= 0.95f;
     } else {
         std::cout << "[INFO] Maksymalny poziom osiągnięty\n";
     }
