@@ -2,6 +2,7 @@
 #include "TowerArcher.h"
 #include "TowerField.h"
 #include "GeneratorField.h"
+//#include "TowerWizard.h"
 #include <iostream>
 
 // definicja statycznej tekstury
@@ -39,6 +40,8 @@ void EmptyField::handleClick(BuildType selectedType, GameEngine& engine) {
         engine.replaceField(this, std::make_unique<GeneratorField>(fieldSprite.getPosition()));
     } else if (selectedType == BuildType::TowerArcher) {
         engine.replaceField(this, std::make_unique<TowerArcher>(fieldSprite.getPosition()));
-    }
+    } /*else if (selectedType == BuildType::TowerWizard) {
+        engine.replaceField(this, std::make_unique<TowerWizard>(fieldSprite.getPosition()));
+    }*/
 
 }

@@ -6,6 +6,7 @@
 #include "Mage.h"
 #include "Samurai.h"
 
+
 GameEngine* GameEngine::instance = nullptr;
 
 GameEngine::GameEngine(sf::RenderWindow& window)
@@ -144,7 +145,6 @@ GameEngine::GameEngine(sf::RenderWindow& window)
 
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.3f, window.getSize().y * 0.3f)));
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.7f, window.getSize().y * 0.7f)));
-
     //initHeroSelectionUI();
     const std::string tilePaths[3] = {
         "assets/Tile_01.png",
@@ -283,7 +283,8 @@ void GameEngine::handleEvents() {
                     if (dynamic_cast<EmptyField*>(selectedField) ||
                         dynamic_cast<TowerField*>(selectedField)) {
                         towerShop.toggleVisible(true);
-                    } else {
+                    }
+                     else {
                         towerShop.toggleVisible(false);
                     }
                     break;
