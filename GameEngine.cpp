@@ -355,10 +355,16 @@ void GameEngine::update(float deltaTime) {
         coinFrameTime = 0.f;
     }
     goldText.setString(std::to_string(playerResources));
+
     enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
-                                 [](const std::unique_ptr<Enemy>& e) {
-                                     return e->markedForDeletion || e->reachedEnd();
+                                 [this](const std::unique_ptr<Enemy>& e) {
+                                     if (e->markedForDeletion) {
+                                         playerResources += 30;  // 💰 złoto za zabicie
+                                         return true;
+                                     }
+                                     return e->reachedEnd();
                                  }), enemies.end());
+
 }
 
 void GameEngine::render() {
