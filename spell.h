@@ -10,14 +10,12 @@ public:
     void update(float deltaTime);
     void draw(sf::RenderWindow& window);
     bool checkCollision(Enemy& enemy);
-    bool isOffScreen(const sf::RenderWindow& window) const;
-    void markForRemoval();
     bool isMarked() const;
 
 private:
     sf::Sprite sprite;
     sf::Vector2f velocity;
-    float speed = 400.f;
+    float speed = 900.f;
     bool markedForRemoval = false;
 };
 

@@ -24,7 +24,8 @@ public:
     void takeDamage(int dmg) override;
     bool isDead() const override;
     void respawn() override;
-
+    void queueAttack() override;
+    void queueExtraAttack() override { /* może pusta implementacja */ }
 protected:
     void handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies,
                       const sf::RenderWindow& window) override;
@@ -50,8 +51,6 @@ protected:
     void switchState(KnightState newState);
     void updateTexture();
     void handleMovement(float deltaTime) override;
-    void queueAttack() override;
-    void queueExtraAttack() override { /* może pusta implementacja */ }
 
 };
 

@@ -29,9 +29,9 @@ public:
 private:
     MageState state;
     sf::Texture idleTex, walkTex, runTex, attackTex, deathTex, winTex;
+    sf::Texture fireballTex;  // jedna tekstura fireballa
 
-    sf::Texture spellTexture;
-    std::vector<Spell> spells;
+    std::vector<std::unique_ptr<Spell>> activeSpells;
 
     int damage;
     float range;
@@ -50,6 +50,7 @@ private:
     sf::Vector2i frameSize;
     float animationTimer = 0.f;
     float frameTime = 0.1f;
+    bool fireballQueued = false;
 
     sf::Vector2f spawnPosition;
 

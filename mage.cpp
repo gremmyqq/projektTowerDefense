@@ -21,6 +21,11 @@ Mage::Mage(const sf::Vector2f& spawnPoint, const sf::Texture&)
         !deathTex.loadFromFile("assets/mage/Dead.png")) {
         throw std::runtime_error("Nie można załadować tekstur Mage’a");
     }
+
+    if (!fireballTex.loadFromFile("assets/mage/FB500-3.png")) {
+        throw std::runtime_error("Nie można załadować fireballa");
+    }
+
     maxHp = 100;
     hp = maxHp;
     frameSize = {128, 128};
@@ -44,14 +49,27 @@ void Mage::update(float deltaTime, const sf::RenderWindow& window,
         switchState(MageState::Idle);
     }
 
-    // Spell logic usunięty
+    for (auto& spell : activeSpells) {
+        spell->update(deltaTime);
+        for (auto& enemy : enemies) {
+            if (!enemy->isDead() && spell->checkCollision(*enemy)) {
+                enemy->takeDamage(100);
+            }
+        }
+    }
+
+    activeSpells.erase(std::remove_if(activeSpells.begin(), activeSpells.end(),
+                                      [](const std::unique_ptr<Spell>& s) { return s->isMarked(); }),
+                       activeSpells.end());
 }
 
 void Mage::draw(sf::RenderWindow& window) {
     window.draw(sprite);
     window.draw(hpBarBg);
     window.draw(hpBar);
-    // Spells usunięte
+    for (auto& spell : activeSpells) {
+        spell->draw(window);
+    }
 }
 
 void Mage::takeDamage(int dmg) {
@@ -74,26 +92,67 @@ void Mage::respawn() {
 }
 
 void Mage::queueAttack() {
-    attackQueued = true;
+    attackQueued = true;  // Q = melee
 }
 
 void Mage::queueExtraAttack() {
-    // Można tu dodać np. AoE
+    fireballQueued = true;  // E = fireball
 }
 
-void Mage::handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies,
-                        const sf::RenderWindow& window) {
-    if (!attackQueued || attackTimer < attackCooldown)
-        return;
 
-    switchState(MageState::Attack);
-    currentFrame = 0;
-    animationTimer = 0.f;
-    attackTimer = 0.f;
+void Mage::handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies, const sf::RenderWindow& window) {
+    if ((attackQueued || fireballQueued) && attackTimer >= attackCooldown) {
+        switchState(MageState::Attack);
+        currentFrame = 0;
+        animationTimer = 0.f;
+        attackTimer = 0.f;
 
-    // Spell usunięty
-    attackQueued = false;
+        if (attackQueued) {
+            // Atak wręcz: szukamy najbliższego wroga w zasięgu melee (np. 80 px)
+            float meleeRange = 80.f;
+            for (auto& enemy : enemies) {
+                if (enemy->isDead()) continue;
+
+                float dx = enemy->getPosition().x - getPosition().x;
+                float dy = enemy->getPosition().y - getPosition().y;
+                float dist = std::sqrt(dx * dx + dy * dy);
+
+                if (dist <= meleeRange) {
+                    enemy->takeDamage(damage);
+                    break;
+                }
+            }
+        }
+
+        if (fireballQueued) {
+            // Fireball: szukamy najbliższego wroga w zasięgu dystansowym
+            Enemy* target = nullptr;
+            float minDist = 100000.f;
+
+            for (auto& enemy : enemies) {
+                if (enemy->isDead()) continue;
+
+                float dx = enemy->getPosition().x - getPosition().x;
+                float dy = enemy->getPosition().y - getPosition().y;
+                float dist = std::sqrt(dx * dx + dy * dy);
+
+                if (dist < minDist) {
+                    minDist = dist;
+                    target = enemy.get();
+                }
+            }
+
+            if (target) {
+                activeSpells.emplace_back(std::make_unique<Spell>(
+                    getPosition(), target->getPosition(), fireballTex));
+            }
+        }
+
+        attackQueued = false;
+        fireballQueued = false;
+    }
 }
+
 
 void Mage::handleMovement(float deltaTime) {
     sf::Vector2f moveDir(0.f, 0.f);
@@ -144,27 +203,17 @@ void Mage::updateTexture() {
 
     switch (state) {
     case MageState::Idle:
-        tex = &idleTex;
-        frameCount = 6;
-        break;
+        tex = &idleTex; frameCount = 6; break;
     case MageState::Walk:
-        tex = &walkTex;
-        frameCount = 7;
-        break;
+        tex = &walkTex; frameCount = 7; break;
     case MageState::Dash:
-        tex = &runTex;
-        frameCount = 6;
-        break;
+        tex = &runTex; frameCount = 6; break;
     case MageState::Attack:
-        tex = &attackTex;
-        frameCount = 7;
-        break;
+        tex = &attackTex; frameCount = 7; break;
     case MageState::Dead:
-        tex = &deathTex;
-        frameCount = 4;
-        break;
+        tex = &deathTex; frameCount = 4; break;
     case MageState::Win:
-        break;
+        return;
     }
 
     if (tex && sprite.getTexture() != tex)

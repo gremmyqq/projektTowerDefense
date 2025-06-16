@@ -206,29 +206,42 @@ void GameEngine::handleEvents() {
             window.close();
         }
 
-        // 2. Klawiatura – Q i E dla Samuraia
+        // 2. Klawiatura – Q i E dla bohaterów
         if (event.type == sf::Event::KeyPressed) {
             if (hero) {
-                Samurai* samurai = dynamic_cast<Samurai*>(hero.get());
-                if (samurai && (event.key.code == sf::Keyboard::Q || event.key.code == sf::Keyboard::E)) {
-                    samurai->queueAttack(event.key.code);
+                if (auto* mage = dynamic_cast<Mage*>(hero.get())) {
+                    if (event.key.code == sf::Keyboard::Q)
+                        mage->queueAttack();
+                    if (event.key.code == sf::Keyboard::E)
+                        mage->queueExtraAttack();
                 }
+
+                if (auto* samurai = dynamic_cast<Samurai*>(hero.get())) {
+                    if (event.key.code == sf::Keyboard::Q || event.key.code == sf::Keyboard::E)
+                        samurai->queueAttack(event.key.code);
+                }
+
+                if (auto* knight = dynamic_cast<Knight*>(hero.get())) {
+                    if (event.key.code == sf::Keyboard::Q)
+                        knight->queueAttack();
+                    // E ignorujemy – brak reakcji
+                }
+                if (auto* archer = dynamic_cast<Archer*>(hero.get())) {
+                    if (event.key.code == sf::Keyboard::Q)
+                        archer->queueAttack();
+                    // E ignorujemy
+                }
+
             }
         }
 
-        // 3. Myszka – LPM i PPM do standardowego ataku
-        if (event.type == sf::Event::MouseButtonPressed) {
-            if (hero) {
-                if (event.mouseButton.button == sf::Mouse::Left)
-                    hero->queueAttack();
-                if (event.mouseButton.button == sf::Mouse::Right)
-                    hero->queueExtraAttack();
-            }
 
+        // 3. Obsługa myszki – tylko przyciski interfejsu
+        if (event.type == sf::Event::MouseButtonPressed) {
             sf::Vector2f mousePos = window.mapPixelToCoords(
                 sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
 
-            // 4. Przycisk START
+            // Przycisk START
             if (startButtonSprite.getGlobalBounds().contains(mousePos) && !roundActive) {
                 roundActive = true;
                 spawnClock = 0;
@@ -238,13 +251,13 @@ void GameEngine::handleEvents() {
                 return;
             }
 
-            // 5. Przycisk SKLEPU
+            // Przycisk SKLEPU
             if (shopButtonSprite.getGlobalBounds().contains(mousePos)) {
                 shop.toggleVisible();
                 return;
             }
 
-            // 6. Kliknięcie w sam sklep
+            // Kliknięcie w sklep
             if (shop.isVisible()) {
                 shop.handleClick(mousePos);
                 return;
@@ -255,9 +268,7 @@ void GameEngine::handleEvents() {
                 return;
             }
 
-            // 7. Kliknięcie w pole
-            if (!hero) return;
-
+            // Kliknięcie w pole budowy
             bool clickedOnField = false;
             towerShop.toggleVisible(false);
 
@@ -266,9 +277,8 @@ void GameEngine::handleEvents() {
                     selectedField = field.get();
                     clickedOnField = true;
 
-                    if (dynamic_cast<EmptyField*>(selectedField)) {
-                        towerShop.toggleVisible(true);
-                    } else if (dynamic_cast<TowerField*>(selectedField)) {
+                    if (dynamic_cast<EmptyField*>(selectedField) ||
+                        dynamic_cast<TowerField*>(selectedField)) {
                         towerShop.toggleVisible(true);
                     } else {
                         towerShop.toggleVisible(false);
