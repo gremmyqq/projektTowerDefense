@@ -37,8 +37,9 @@ void TowerArcher::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& e
         if (upgradeTime >= upgradeDuration) {
             isUpgrading = false;
             currentAnim = AnimationType::Idle;
-            loadAnimation(currentAnim);
+            loadAnimation(AnimationType::Idle);  // załaduj nowe idle z aktualnym poziomem
         }
+
     }
 
     attack(enemies);
@@ -50,13 +51,33 @@ void TowerArcher::draw(sf::RenderWindow& window) {
 }
 
 void TowerArcher::updateAnimation(float deltaTime) {
+    if (frameCount <= 1) return; // ❗ NIE animuj jeśli tylko jedna klatka
+
     animTimer += deltaTime;
     if (animTimer < animInterval) return;
     animTimer = 0.f;
 
-    currentFrame = (currentFrame + 1) % frameCount;
+    currentFrame++;
+
+    if (currentAnim == AnimationType::Upgrade) {
+        if (currentFrame >= frameCount) {
+            // zakończ animację upgrade po jednym cyklu
+            isUpgrading = false;
+            currentAnim = AnimationType::Idle;
+            loadAnimation(AnimationType::Idle);
+            return;
+        }
+    } else {
+        // idle zapętlaj
+        if (currentFrame >= frameCount) {
+            currentFrame = 0;
+        }
+    }
+
     sprite.setTextureRect(sf::IntRect(currentFrame * frameWidth, 0, frameWidth, frameHeight));
 }
+
+
 
 void TowerArcher::loadAnimation(AnimationType type) {
     std::string path;
@@ -72,12 +93,30 @@ void TowerArcher::loadAnimation(AnimationType type) {
     }
 
     sprite.setTexture(idleTexture);
-    frameCount = (type == AnimationType::Idle) ? 4 : 4; // zmień jeśli potrzeba
+
+    // Ustaw liczbę klatek w zależności od poziomu i typu
+    if (type == AnimationType::Idle) {
+        if (level == 1)
+            frameCount = 1;
+        else if (level <= 3)
+            frameCount = 4;
+        else
+            frameCount = 6;
+    } else {
+        frameCount = 4;
+    }
+
     currentFrame = 0;
     sprite.setTextureRect(sf::IntRect(0, 0, frameWidth, frameHeight));
+
 }
 
 void TowerArcher::upgrade() {
+    if (isUpgrading) {
+        std::cout << "[INFO] Wieża już się ulepsza\n";
+        return;
+    }
+
     if (level < maxLevel) {
         ++level;
         currentAnim = AnimationType::Upgrade;
@@ -88,6 +127,7 @@ void TowerArcher::upgrade() {
         std::cout << "[INFO] Maksymalny poziom osiągnięty\n";
     }
 }
+
 
 bool TowerArcher::contains(const sf::Vector2f& point) const {
     return sprite.getGlobalBounds().contains(point);

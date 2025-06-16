@@ -153,6 +153,9 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         if (selectedField) {
             if (auto* archer = dynamic_cast<TowerArcher*>(selectedField)) {
                 archer->upgrade();
+                selectedField = nullptr;
+                towerShop.toggleVisible(false);
+
             }
         }
     });
