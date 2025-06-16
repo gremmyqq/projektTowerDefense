@@ -28,6 +28,7 @@ SOURCES += \
         Shop.cpp \
         TowerArcher.cpp \
         TowerField.cpp \
+        TowerWizard.cpp \
         arrow.cpp \
         mage.cpp \
         main.cpp \
@@ -56,6 +57,7 @@ HEADERS += \
         Shop.h \
         TowerArcher.h \
         TowerField.h \
+        TowerWizard.h \
         arrow.h \
         mage.h \
         samurai.h \

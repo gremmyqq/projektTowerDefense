@@ -104,42 +104,53 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    towerShop.setFont(uiFont);
-    towerShop.setPosition({300.f, 500.f});
-    towerShop.setGoldPointer(&playerResources);
+    buildShop.setFont(uiFont);
+    buildShop.setPosition({300.f, 500.f});
+    buildShop.setGoldPointer(&playerResources);
 
-    // Dla pustego pola
-    towerShop.addItem("Postaw Łucznika", 50, [this]() {
+    upgradeShop.setFont(uiFont);
+    upgradeShop.setPosition({300.f, 500.f});
+    upgradeShop.setGoldPointer(&playerResources);
+
+
+    buildShop.addItem("Postaw Łucznika", 50, [this]() {
         selectedBuildType = BuildType::TowerArcher;
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
-            towerShop.toggleVisible(false);
+            buildShop.toggleVisible(false);
             selectedField = nullptr;
         }
     });
 
+    buildShop.addItem("Postaw Wizard", 80, [this]() {
+        selectedBuildType = BuildType::TowerWizard;
+        if (selectedField) {
+            selectedField->handleClick(selectedBuildType, *this);
+            buildShop.toggleVisible(false);
+            selectedField = nullptr;
+        }
+    });
 
-    towerShop.addItem("Postaw Generator", 30, [this]() {
+    buildShop.addItem("Postaw Generator", 30, [this]() {
         selectedBuildType = BuildType::Generator;
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
-            towerShop.toggleVisible(false);
+            buildShop.toggleVisible(false);
             selectedField = nullptr;
         }
     });
 
-
-    // Dla istniejącej wieży
-    towerShop.addItem("Ulepsz wieżę", 100, [this]() {
+    upgradeShop.addItem("Ulepsz wieżę", 100, [this]() {
         if (selectedField) {
-            if (auto* archer = dynamic_cast<TowerArcher*>(selectedField)) {
-                archer->upgrade();
+            if (auto* tower = dynamic_cast<TowerField*>(selectedField)) {
+                tower->upgrade();
                 selectedField = nullptr;
-                towerShop.toggleVisible(false);
-
+                upgradeShop.toggleVisible(false);
             }
+
         }
     });
+
 
 
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.3f, window.getSize().y * 0.3f)));
@@ -266,33 +277,49 @@ void GameEngine::handleEvents() {
                 return;
             }
 
-            if (towerShop.isVisible()) {
-                towerShop.handleClick(mousePos);
+            if (buildShop.isVisible()) {
+                buildShop.handleClick(mousePos);
+                return;
+            }
+            if (upgradeShop.isVisible()) {
+                upgradeShop.handleClick(mousePos);
                 return;
             }
 
+
             // Kliknięcie w pole budowy
             bool clickedOnField = false;
-            towerShop.toggleVisible(false);
+            upgradeShop.toggleVisible(false);
+            buildShop.toggleVisible(false);
 
             for (auto& field : fields) {
                 if (field->contains(mousePos)) {
                     selectedField = field.get();
                     clickedOnField = true;
 
-                    if (dynamic_cast<EmptyField*>(selectedField) ||
-                        dynamic_cast<TowerField*>(selectedField)) {
-                        towerShop.toggleVisible(true);
+                    upgradeShop.toggleVisible(false);
+                    buildShop.toggleVisible(false);
+
+                    if (dynamic_cast<EmptyField*>(selectedField)) {
+                        buildShop.toggleVisible(true);
+                        upgradeShop.toggleVisible(false);
+                    } else if (dynamic_cast<TowerField*>(selectedField)) {
+                        buildShop.toggleVisible(false);
+                        upgradeShop.toggleVisible(true);
                     } else {
-                        towerShop.toggleVisible(false);
+                        buildShop.toggleVisible(false);
+                        upgradeShop.toggleVisible(false);
                     }
+
+
                     break;
                 }
             }
 
             if (!clickedOnField) {
                 selectedField = nullptr;
-                towerShop.toggleVisible(false);
+                upgradeShop.toggleVisible(false);
+                buildShop.toggleVisible(false);
             }
 
             shop.handleClick(mousePos);
@@ -407,9 +434,13 @@ void GameEngine::render() {
         window.draw(cornerTileSprites[i]);
     }
 
-    if (towerShop.isVisible()) {
-        towerShop.draw(window);
+    if (buildShop.isVisible()) {
+        buildShop.draw(window);
     }
+    if (upgradeShop.isVisible()) {
+        upgradeShop.draw(window);
+    }
+
 
 
     window.draw(coinSprite);
