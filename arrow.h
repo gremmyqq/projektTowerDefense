@@ -14,6 +14,9 @@ public:
     bool isOffScreen(const sf::RenderWindow& window) const;
     void markForRemoval();
     bool isMarked() const;
+    bool isFinished() const;
+    bool reachedTarget = false;
+
 
     sf::Vector2f getPosition() const;
 

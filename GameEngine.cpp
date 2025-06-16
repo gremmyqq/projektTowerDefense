@@ -1,6 +1,7 @@
 #include "GameEngine.h"
 #include <stdexcept>
 #include "Archer.h"
+#include "EnemyArcher.h"
 #include "Knight.h"
 #include "Mage.h"
 
@@ -302,6 +303,8 @@ void GameEngine::update(float deltaTime) {
                     enemies.emplace_back(std::make_unique<EnemyFast>(allPaths[spawn.pathIndex]));
                 } else if (spawn.type == " Tank") {
                     enemies.emplace_back(std::make_unique<EnemyTank>(allPaths[spawn.pathIndex]));
+                }else if (spawn.type == " Archer") {
+                    enemies.emplace_back(std::make_unique<EnemyArcher>(allPaths[spawn.pathIndex]));
                 }
             }
 

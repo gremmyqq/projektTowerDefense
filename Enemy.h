@@ -32,6 +32,8 @@ public:
     bool markedForDeletion = false;
 
     virtual void updateAgainstHero(float deltaTime, HeroBase& hero);
+    virtual void onAttackAnimationFinished() {}  // domyślnie nic nie robi
+
 
 
     // ... (dotychczasowy kod)

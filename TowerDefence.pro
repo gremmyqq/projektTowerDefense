@@ -16,6 +16,7 @@ SOURCES += \
         Archer.cpp \
         Castle.cpp \
         EmptyField.cpp \
+        EnemyArcher.cpp \
         EnemyFast.cpp \
         EnemyTank.cpp \
         GameEngine.cpp \
@@ -38,6 +39,7 @@ HEADERS += \
         Castle.h \
         EmptyField.h \
         Enemy.h \
+        EnemyArcher.h \
         EnemyFast.h \
         EnemyRegular.h \
         EnemyTank.h \
