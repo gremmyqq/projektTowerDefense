@@ -34,6 +34,7 @@ public:
     virtual void updateAgainstHero(float deltaTime, HeroBase& hero);
     virtual void onAttackAnimationFinished() {}  // domyślnie nic nie robi
 
+    int direction = 0;
 
 
     // ... (dotychczasowy kod)
@@ -55,7 +56,7 @@ protected:
     int totalFrames = 6;
     int frameWidth = 48;
     int frameHeight = 48;
-    int direction = 0;
+    //int direction = 0;
 
     enum class EnemyState {
         Walking,
@@ -68,7 +69,7 @@ protected:
     EnemyState state = EnemyState::Walking;
 
     void moveTowardsTarget(float deltaTime);
-    void updateAnimation(float deltaTime);
+    virtual void updateAnimation(float deltaTime);
     void updateSpriteDirection(const sf::Vector2f& dir);
 
     float attackCooldown = 1.0f;

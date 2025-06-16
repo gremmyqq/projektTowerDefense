@@ -6,12 +6,15 @@
 #include "Mage.h"
 #include "Samurai.h"
 
+GameEngine* GameEngine::instance = nullptr;
+
 GameEngine::GameEngine(sf::RenderWindow& window)
     : window(window),
     spawnTimer(0.f),
     spawnInterval(3.f),
     castle(sf::Vector2f(280.f, 1080.f)) {
 
+    GameEngine::instance = this;
     if (!heroTexture.loadFromFile("assets/hero1.png")) {
         throw std::runtime_error("Nie można załadować assets/hero1.png");
     }
@@ -308,6 +311,8 @@ void GameEngine::update(float deltaTime) {
                     enemies.emplace_back(std::make_unique<EnemyTank>(allPaths[spawn.pathIndex]));
                 }else if (spawn.type == " Archer") {
                     enemies.emplace_back(std::make_unique<EnemyArcher>(allPaths[spawn.pathIndex]));
+                }else if (spawn.type == " Boss") {
+                    enemies.emplace_back(std::make_unique<EnemyBoss>(allPaths[spawn.pathIndex]));
                 }
             }
 

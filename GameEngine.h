@@ -8,6 +8,7 @@
 #include "EnemyRegular.h"
 #include "EnemyFast.h"
 #include "EnemyTank.h"
+#include "EnemyBoss.h"
 #include "Shop.h"
 #include "Field.h"
 #include "HeroBase.h"
@@ -30,6 +31,10 @@ public:
         selectedBuildType = type;
     }
     void replaceField(Field* oldField, std::unique_ptr<Field> newField);
+
+    static GameEngine* instance;  // ← dodaj to
+    Castle& getCastle() { return castle; }  // ← getter
+
 
 private:
     sf::RenderWindow& window;
