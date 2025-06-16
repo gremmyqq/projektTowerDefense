@@ -99,9 +99,11 @@ void Enemy::updateAnimation(float deltaTime) {
             if (currentFrame < totalFrames - 1) {
                 currentFrame++;
             } else {
+                onAttackAnimationFinished();  // ← wywołanie wirtualne
                 state = EnemyState::Walking;
                 currentFrame = 0;
             }
+
         } else {
             currentFrame = (currentFrame + 1) % totalFrames;
         }

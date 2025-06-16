@@ -14,13 +14,16 @@ public:
     bool isOffScreen(const sf::RenderWindow& window) const;
     void markForRemoval();
     bool isMarked() const;
+    bool isFinished() const;
+    bool reachedTarget = false;
+
 
     sf::Vector2f getPosition() const;
 
 private:
     sf::Sprite sprite;
     sf::Vector2f velocity;
-    float speed = 500.f;
+    float speed = 1000.f;
     bool markedForRemoval = false;
 };
 

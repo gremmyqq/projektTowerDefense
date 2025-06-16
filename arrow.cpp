@@ -43,3 +43,7 @@ void Arrow::markForRemoval() {
 bool Arrow::isMarked() const {
     return markedForRemoval;
 }
+
+bool Arrow::isFinished() const {
+    return reachedTarget;
+}

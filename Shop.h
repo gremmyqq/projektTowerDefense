@@ -19,6 +19,8 @@ public:
     void draw(sf::RenderWindow& window);
 
     void toggleVisible();
+    void toggleVisible(bool show);
+
     bool isVisible() const;
 
 private:

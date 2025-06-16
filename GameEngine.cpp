@@ -1,6 +1,7 @@
 #include "GameEngine.h"
 #include <stdexcept>
 #include "Archer.h"
+#include "EnemyArcher.h"
 #include "Knight.h"
 #include "Mage.h"
 
@@ -64,22 +65,6 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     shop.setGoldPointer(&playerResources);
   // zamiast playerResources
 
-    shop.addItem("Wieża Archer", 50, [this]() {
-        if (selectedField) {
-
-            selectedBuildType = BuildType::TowerArcher;
-            // handleClick() zrobi resztę w następnym kliknięciu
-
-        }
-
-    });
-
-    shop.addItem("Generator", 30, [this]() {
-        if (selectedField) {
-            selectedBuildType = BuildType::Generator;
-        }
-
-    });
 
     shop.addItem("Ulepsz zamek", 100, [this]() {
         if (castle.getLevel() < castle.getMaxLevel()) {
@@ -110,21 +95,46 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    shop.addItem("Ulepsz wieżę", 100, [this]() {
+    towerShop.setFont(uiFont);
+    towerShop.setPosition({300.f, 500.f});
+    towerShop.setGoldPointer(&playerResources);
+
+    // Dla pustego pola
+    towerShop.addItem("Postaw Łucznika", 50, [this]() {
+        selectedBuildType = BuildType::TowerArcher;
         if (selectedField) {
-            // spróbuj zrzutować na TowerArcher
-            TowerArcher* archer = dynamic_cast<TowerArcher*>(selectedField);
-            if (archer) {
-                archer->upgrade();
-            } else {
-                std::cout << "To pole nie jest wieżą typu TowerArcher!\n";
-            }
+            selectedField->handleClick(selectedBuildType, *this);
+            towerShop.toggleVisible(false);
             selectedField = nullptr;
         }
     });
 
+
+    towerShop.addItem("Postaw Generator", 30, [this]() {
+        selectedBuildType = BuildType::Generator;
+        if (selectedField) {
+            selectedField->handleClick(selectedBuildType, *this);
+            towerShop.toggleVisible(false);
+            selectedField = nullptr;
+        }
+    });
+
+
+    // Dla istniejącej wieży
+    towerShop.addItem("Ulepsz wieżę", 100, [this]() {
+        if (selectedField) {
+            if (auto* archer = dynamic_cast<TowerArcher*>(selectedField)) {
+                archer->upgrade();
+                selectedField = nullptr;
+                towerShop.toggleVisible(false);
+
+            }
+        }
+    });
+
+
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.3f, window.getSize().y * 0.3f)));
-    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.5f, window.getSize().y * 0.3f)));
+    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.7f, window.getSize().y * 0.7f)));
 
     //initHeroSelectionUI();
     const std::string tilePaths[3] = {
@@ -183,6 +193,7 @@ void GameEngine::run() {
 
 void GameEngine::handleEvents() {
     sf::Event event;
+    //std::cout << "[DEBUG] handleEvents() DZIAŁA\n";
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed ||
             (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)) {
@@ -224,21 +235,48 @@ void GameEngine::handleEvents() {
                 return;
             }
 
+            if (towerShop.isVisible()) {
+                towerShop.handleClick(mousePos);
+                return;
+            }
+
+
             if (!hero) return;
 
             bool clickedOnField = false;
+            towerShop.toggleVisible(false); // schowaj stary widok
+            //std::cout << "Kliknięto pole: " << typeid(*selectedField).name() << std::endl;
+
 
             for (auto& field : fields) {
+                std::cout << "[DEBUG] Sprawdzam pole\n";
                 if (field->contains(mousePos)) {
-                    selectedField = field.get();  // ← TO DODAJ
+                    std::cout << "[DEBUG] Trafiono pole!\n";
+                    selectedField = field.get();
                     clickedOnField = true;
+
+                    // Pokazanie towerShop w zależności od typu pola
+                    if (dynamic_cast<EmptyField*>(selectedField)) {
+                        towerShop.toggleVisible(true);  // pokaż opcje budowy
+                        std::cout << "[INFO] Pokazano towerShop (puste pole).\n";
+                    } else if (dynamic_cast<TowerField*>(selectedField)) {
+                        towerShop.toggleVisible(true);  // pokaż opcję ulepszenia
+                        std::cout << "[INFO] Pokazano towerShop (wieża).\n";
+                    } else {
+                        towerShop.toggleVisible(false);
+                    }
+
+                    break;
                 }
-                field->handleClick(selectedBuildType, *this);
             }
 
+
+
             if (!clickedOnField) {
-                selectedField = nullptr;  // ← kliknięcie poza polem = ukryj sklep
+                selectedField = nullptr;
+                towerShop.toggleVisible(false);
             }
+
 
 
             shop.handleClick(mousePos);
@@ -249,6 +287,7 @@ void GameEngine::handleEvents() {
 
 void GameEngine::update(float deltaTime) {
     spawnClock += deltaTime;
+    //std::cout << "[DEBUG] Liczba pól: " << fields.size() << "\n";
 
     if (roundActive && waveMap.find(currentWave) != waveMap.end()) {
         const auto& wave = waveMap[currentWave];
@@ -264,6 +303,8 @@ void GameEngine::update(float deltaTime) {
                     enemies.emplace_back(std::make_unique<EnemyFast>(allPaths[spawn.pathIndex]));
                 } else if (spawn.type == " Tank") {
                     enemies.emplace_back(std::make_unique<EnemyTank>(allPaths[spawn.pathIndex]));
+                }else if (spawn.type == " Archer") {
+                    enemies.emplace_back(std::make_unique<EnemyArcher>(allPaths[spawn.pathIndex]));
                 }
             }
 
@@ -341,6 +382,12 @@ void GameEngine::render() {
     for (int i = 0; i < 3; ++i) {
         window.draw(cornerTileSprites[i]);
     }
+
+    if (towerShop.isVisible()) {
+        towerShop.draw(window);
+    }
+
+
     window.draw(coinSprite);
     window.draw(goldText);
     window.draw(shopButtonSprite);
