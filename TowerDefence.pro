@@ -27,6 +27,7 @@ SOURCES += \
         LevelLoader.cpp \
         Shop.cpp \
         TowerArcher.cpp \
+        TowerCatapult.cpp \
         TowerField.cpp \
         TowerWizard.cpp \
         arrow.cpp \
@@ -56,6 +57,7 @@ HEADERS += \
         LevelLoader.h \
         Shop.h \
         TowerArcher.h \
+        TowerCatapult.h \
         TowerField.h \
         TowerWizard.h \
         arrow.h \

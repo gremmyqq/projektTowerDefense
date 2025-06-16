@@ -113,7 +113,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     upgradeShop.setGoldPointer(&playerResources);
 
 
-    buildShop.addItem("Postaw Łucznika", 50, [this]() {
+    buildShop.addItem("Postaw Łucznika", 100, [this]() {
         selectedBuildType = BuildType::TowerArcher;
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
@@ -122,8 +122,17 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    buildShop.addItem("Postaw Wizard", 80, [this]() {
+    buildShop.addItem("Postaw Wizard", 150, [this]() {
         selectedBuildType = BuildType::TowerWizard;
+        if (selectedField) {
+            selectedField->handleClick(selectedBuildType, *this);
+            buildShop.toggleVisible(false);
+            selectedField = nullptr;
+        }
+    });
+
+    buildShop.addItem("Postaw Katapulte", 250, [this]() {
+        selectedBuildType = BuildType::TowerCatapult;
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
             buildShop.toggleVisible(false);
@@ -140,7 +149,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    upgradeShop.addItem("Ulepsz wieżę", 100, [this]() {
+    upgradeShop.addItem("Ulepsz wieżę", 200, [this]() {
         if (selectedField) {
             if (auto* tower = dynamic_cast<TowerField*>(selectedField)) {
                 tower->upgrade();

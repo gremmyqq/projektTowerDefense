@@ -1,8 +1,8 @@
-#include "TowerArcher.h"
+#include "TowerCatapult.h"
 #include <cmath>
 #include <iostream>
 
-TowerArcher::TowerArcher(const sf::Vector2f& pos)
+TowerCatapult::TowerCatapult(const sf::Vector2f& pos)
     : TowerField(pos)
 {
     sprite.setOrigin(frameWidth / 2.f, frameHeight / 2.f);
@@ -17,7 +17,7 @@ TowerArcher::TowerArcher(const sf::Vector2f& pos)
 
 }
 
-void TowerArcher::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
+void TowerCatapult::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
     for (auto& enemy : enemies) {
         if (enemy->isDead()) continue;
 
@@ -28,7 +28,7 @@ void TowerArcher::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
         //std::cout<<dist<<"\n";
 
         if (dist <= range && timeSinceLastAttack >= attackCooldown) {
-            arrows.emplace_back(shape.getPosition(), enemy->getPosition(), arrowTexture);
+            arrows.emplace_back(shape.getPosition(), enemy->getPosition(), arrowTexture, 800.f);
 
             std::cout<<"strzal\n";
             timeSinceLastAttack = 0.f;
@@ -37,7 +37,7 @@ void TowerArcher::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
     }
 }
 
-void TowerArcher::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies) {
+void TowerCatapult::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies) {
     timeSinceLastAttack += deltaTime;
 
     if (isUpgrading) {
@@ -73,7 +73,7 @@ void TowerArcher::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& e
 
 }
 
-void TowerArcher::draw(sf::RenderWindow& window) {
+void TowerCatapult::draw(sf::RenderWindow& window) {
     window.draw(sprite);
     for (auto& arrow : arrows) {
         arrow.draw(window);
@@ -81,7 +81,7 @@ void TowerArcher::draw(sf::RenderWindow& window) {
 
 }
 
-void TowerArcher::updateAnimation(float deltaTime) {
+void TowerCatapult::updateAnimation(float deltaTime) {
     if (frameCount <= 1) return; // ❗ NIE animuj jeśli tylko jedna klatka
 
     animTimer += deltaTime;
@@ -110,12 +110,12 @@ void TowerArcher::updateAnimation(float deltaTime) {
 
 
 
-void TowerArcher::loadAnimation(AnimationType type) {
+void TowerCatapult::loadAnimation(AnimationType type) {
     std::string path;
     if (type == AnimationType::Idle) {
-        path = "assets/ArcherTower/2 Idle/" + std::to_string(level) + ".png";
+        path = "assets/CatapultTower/Idle" + std::to_string(level) + ".png";
     } else {
-        path = "assets/ArcherTower/1 Upgrade/" + std::to_string(level) + ".png";
+        path = "assets/CatapultTower/Upgrade" + std::to_string(level) + ".png";
     }
 
     if (!idleTexture.loadFromFile(path)) {
@@ -127,12 +127,10 @@ void TowerArcher::loadAnimation(AnimationType type) {
 
     // Ustaw liczbę klatek w zależności od poziomu i typu
     if (type == AnimationType::Idle) {
-        if (level == 1)
+        if (level <= 2)
             frameCount = 1;
-        else if (level <= 3)
+        else if (level <= 4)
             frameCount = 4;
-        else
-            frameCount = 6;
     } else {
         frameCount = 4;
     }
@@ -142,7 +140,7 @@ void TowerArcher::loadAnimation(AnimationType type) {
 
 }
 
-void TowerArcher::upgrade() {
+void TowerCatapult::upgrade() {
     if (isUpgrading) {
         std::cout << "[INFO] Wieża już się ulepsza\n";
         return;
@@ -164,6 +162,7 @@ void TowerArcher::upgrade() {
 }
 
 
-bool TowerArcher::contains(const sf::Vector2f& point) const {
+bool TowerCatapult::contains(const sf::Vector2f& point) const {
     return sprite.getGlobalBounds().contains(point);
 }
+
