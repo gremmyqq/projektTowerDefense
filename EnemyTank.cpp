@@ -3,7 +3,7 @@
 
 EnemyTank::EnemyTank(const std::vector<sf::Vector2f>& path)
     : Enemy(path) {
-    maxHealth = 150;
+    maxHealth = 250;
     health = maxHealth;
     speed = 60;
 

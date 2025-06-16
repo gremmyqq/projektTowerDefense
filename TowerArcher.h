@@ -5,6 +5,9 @@
 #include <SFML/Graphics.hpp>
 #include <vector>
 #include <memory>
+#include "Arrow.h"
+
+
 
 class TowerArcher : public TowerField {
 public:
@@ -19,6 +22,9 @@ public:
 private:
     sf::Texture idleTexture;
     sf::Sprite sprite;
+
+    std::vector<Arrow> arrows;
+    sf::Texture arrowTexture;
 
     float animTimer = 0.f;
     float animInterval = 0.2f;
@@ -39,6 +45,11 @@ private:
 
     void updateAnimation(float deltaTime);
     void loadAnimation(AnimationType type);
+
+    float attackCooldown = 1.0f;
+    float timeSinceLastAttack = 0.0f;
+    float range = 300.f;
+    int damage = 30;
 };
 
 #endif // TOWERARCHER_H

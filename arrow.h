@@ -20,7 +20,7 @@ public:
 private:
     sf::Sprite sprite;
     sf::Vector2f velocity;
-    float speed = 500.f;
+    float speed = 1000.f;
     bool markedForRemoval = false;
 };
 

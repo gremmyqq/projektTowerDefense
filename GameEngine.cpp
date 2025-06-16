@@ -64,22 +64,6 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     shop.setGoldPointer(&playerResources);
   // zamiast playerResources
 
-    shop.addItem("Wieża Archer", 50, [this]() {
-        if (selectedField) {
-
-            selectedBuildType = BuildType::TowerArcher;
-            // handleClick() zrobi resztę w następnym kliknięciu
-
-        }
-
-    });
-
-    shop.addItem("Generator", 30, [this]() {
-        if (selectedField) {
-            selectedBuildType = BuildType::Generator;
-        }
-
-    });
 
     shop.addItem("Ulepsz zamek", 100, [this]() {
         if (castle.getLevel() < castle.getMaxLevel()) {
@@ -107,19 +91,6 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     shop.addItem("Ulepsz bohatera", 200, [this]() {
         if (hero) {
             hero->upgrade();  // dodaj tę metodę do Knight/Archer/Mage
-        }
-    });
-
-    shop.addItem("Ulepsz wieżę", 100, [this]() {
-        if (selectedField) {
-            // spróbuj zrzutować na TowerArcher
-            TowerArcher* archer = dynamic_cast<TowerArcher*>(selectedField);
-            if (archer) {
-                archer->upgrade();
-            } else {
-                std::cout << "To pole nie jest wieżą typu TowerArcher!\n";
-            }
-            selectedField = nullptr;
         }
     });
 
@@ -162,7 +133,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
 
 
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.3f, window.getSize().y * 0.3f)));
-    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.5f, window.getSize().y * 0.3f)));
+    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.7f, window.getSize().y * 0.7f)));
 
     //initHeroSelectionUI();
     const std::string tilePaths[3] = {

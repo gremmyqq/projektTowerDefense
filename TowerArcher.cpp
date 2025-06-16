@@ -6,10 +6,15 @@ TowerArcher::TowerArcher(const sf::Vector2f& pos)
     : TowerField(pos)
 {
     sprite.setOrigin(frameWidth / 2.f, frameHeight / 2.f);
+    sprite.setScale(1.25f, 1.25f);
     sprite.setPosition(pos);
     shape.setFillColor(sf::Color::Transparent);
 
     loadAnimation(AnimationType::Idle);
+    if (!arrowTexture.loadFromFile("assets/ArcherTower/arrow.png")) {
+        std::cerr << "[BŁĄD] Nie można załadować strzały!\n";
+    }
+
 }
 
 void TowerArcher::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
@@ -20,9 +25,12 @@ void TowerArcher::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
             enemy->getPosition().x - shape.getPosition().x,
             enemy->getPosition().y - shape.getPosition().y
             );
+        std::cout<<dist<<"\n";
 
         if (dist <= range && timeSinceLastAttack >= attackCooldown) {
-            enemy->takeDamage(damage);
+            arrows.emplace_back(shape.getPosition(), enemy->getPosition(), arrowTexture);
+
+            std::cout<<"strzal\n";
             timeSinceLastAttack = 0.f;
             break;
         }
@@ -44,10 +52,33 @@ void TowerArcher::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& e
 
     attack(enemies);
     updateAnimation(deltaTime);
+
+    for (auto& arrow : arrows) {
+        arrow.update(deltaTime);
+    }
+
+    arrows.erase(std::remove_if(arrows.begin(), arrows.end(),
+                                [&](Arrow& arrow) {
+                                    if (arrow.isMarked()) return true;
+
+                                    for (auto& enemy : enemies) {
+                                        if (!enemy->isDead() && arrow.checkCollision(*enemy)) {
+                                            enemy->takeDamage(damage);
+                                            arrow.markForRemoval();
+                                            return true;
+                                        }
+                                    }
+                                    return false;
+                                }), arrows.end());
+
 }
 
 void TowerArcher::draw(sf::RenderWindow& window) {
     window.draw(sprite);
+    for (auto& arrow : arrows) {
+        arrow.draw(window);
+    }
+
 }
 
 void TowerArcher::updateAnimation(float deltaTime) {

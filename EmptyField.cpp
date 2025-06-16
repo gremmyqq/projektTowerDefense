@@ -15,8 +15,9 @@ EmptyField::EmptyField(const sf::Vector2f& pos) {
     }
 
     fieldSprite.setTexture(fieldTexture);
-    fieldSprite.setOrigin(32.f, 32.f); // dostosuj do grafiki
+    fieldSprite.setOrigin(fieldTexture.getSize().x / 2.f, fieldTexture.getSize().y / 2.f); // dostosuj do grafiki
     fieldSprite.setPosition(pos);
+    fieldSprite.setScale(1.25f, 1.25f);
 }
 
 void EmptyField::draw(sf::RenderWindow& window) {
