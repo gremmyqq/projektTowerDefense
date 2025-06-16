@@ -4,6 +4,7 @@
 #include "EnemyArcher.h"
 #include "Knight.h"
 #include "Mage.h"
+#include "Samurai.h"
 
 GameEngine::GameEngine(sf::RenderWindow& window)
     : window(window),
@@ -86,6 +87,11 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     shop.addItem("Kup Maga", 300, [this]() {
         if (!hero) {
             hero = std::make_unique<Mage>(sf::Vector2f(400.f, 500.f), heroTexture);
+        }
+    });
+    shop.addItem("Kup Samuraia", 300, [this]() {
+        if (!hero) {
+            hero = std::make_unique<Samurai>(sf::Vector2f(400.f, 500.f), heroTexture);
         }
     });
 
@@ -193,12 +199,24 @@ void GameEngine::run() {
 
 void GameEngine::handleEvents() {
     sf::Event event;
-    //std::cout << "[DEBUG] handleEvents() DZIAŁA\n";
     while (window.pollEvent(event)) {
+        // 1. Zamknięcie okna / ESC
         if (event.type == sf::Event::Closed ||
             (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)) {
             window.close();
         }
+
+        // 2. Klawiatura – Q i E dla Samuraia
+        if (event.type == sf::Event::KeyPressed) {
+            if (hero) {
+                Samurai* samurai = dynamic_cast<Samurai*>(hero.get());
+                if (samurai && (event.key.code == sf::Keyboard::Q || event.key.code == sf::Keyboard::E)) {
+                    samurai->queueAttack(event.key.code);
+                }
+            }
+        }
+
+        // 3. Myszka – LPM i PPM do standardowego ataku
         if (event.type == sf::Event::MouseButtonPressed) {
             if (hero) {
                 if (event.mouseButton.button == sf::Mouse::Left)
@@ -206,30 +224,27 @@ void GameEngine::handleEvents() {
                 if (event.mouseButton.button == sf::Mouse::Right)
                     hero->queueExtraAttack();
             }
-        }
-        if (event.type == sf::Event::MouseButtonPressed &&
-            event.mouseButton.button == sf::Mouse::Left) {
+
             sf::Vector2f mousePos = window.mapPixelToCoords(
                 sf::Vector2i(event.mouseButton.x, event.mouseButton.y));
-            // 1. Kliknięcie START — zawsze działa pierwsze
+
+            // 4. Przycisk START
             if (startButtonSprite.getGlobalBounds().contains(mousePos) && !roundActive) {
                 roundActive = true;
                 spawnClock = 0;
                 if (shop.isVisible()) {
-                    shop.toggleVisible();  // zamknij sklep przy starcie
+                    shop.toggleVisible();
                 }
-                std::cout << "Start i zamknięcie sklepu.\n";
                 return;
             }
 
-            // 2. Otwieranie/zamykanie sklepu
+            // 5. Przycisk SKLEPU
             if (shopButtonSprite.getGlobalBounds().contains(mousePos)) {
                 shop.toggleVisible();
-                std::cout << "[INFO] Shop toggled: " << shop.isVisible() << "\n";
                 return;
             }
 
-            // 3. Klikanie w sam sklep
+            // 6. Kliknięcie w sam sklep
             if (shop.isVisible()) {
                 shop.handleClick(mousePos);
                 return;
@@ -240,50 +255,38 @@ void GameEngine::handleEvents() {
                 return;
             }
 
-
+            // 7. Kliknięcie w pole
             if (!hero) return;
 
             bool clickedOnField = false;
-            towerShop.toggleVisible(false); // schowaj stary widok
-            //std::cout << "Kliknięto pole: " << typeid(*selectedField).name() << std::endl;
-
+            towerShop.toggleVisible(false);
 
             for (auto& field : fields) {
-                std::cout << "[DEBUG] Sprawdzam pole\n";
                 if (field->contains(mousePos)) {
-                    std::cout << "[DEBUG] Trafiono pole!\n";
                     selectedField = field.get();
                     clickedOnField = true;
 
-                    // Pokazanie towerShop w zależności od typu pola
                     if (dynamic_cast<EmptyField*>(selectedField)) {
-                        towerShop.toggleVisible(true);  // pokaż opcje budowy
-                        std::cout << "[INFO] Pokazano towerShop (puste pole).\n";
+                        towerShop.toggleVisible(true);
                     } else if (dynamic_cast<TowerField*>(selectedField)) {
-                        towerShop.toggleVisible(true);  // pokaż opcję ulepszenia
-                        std::cout << "[INFO] Pokazano towerShop (wieża).\n";
+                        towerShop.toggleVisible(true);
                     } else {
                         towerShop.toggleVisible(false);
                     }
-
                     break;
                 }
             }
-
-
 
             if (!clickedOnField) {
                 selectedField = nullptr;
                 towerShop.toggleVisible(false);
             }
 
-
-
             shop.handleClick(mousePos);
-
         }
     }
 }
+
 
 void GameEngine::update(float deltaTime) {
     spawnClock += deltaTime;

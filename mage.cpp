@@ -1,33 +1,30 @@
 #include "Mage.h"
 #include <cmath>
+#include <iostream>
+#include <stdexcept>
 
-Mage::Mage(const sf::Vector2f& spawnPoint, const sf::Texture& texture)
-    : HeroBase(spawnPoint, texture) {
-    speed = 140.f;
+Mage::Mage(const sf::Vector2f& spawnPoint, const sf::Texture&)
+    : HeroBase(spawnPoint, sf::Texture()),
+    state(MageState::Idle),
+    attackCooldown(0.8f),
+    attackTimer(0.f),
+    attackQueued(false),
+    range(350.f),
+    damage(45),
+    speed(140.f),
+    spawnPosition(spawnPoint) {
+
+    if (!idleTex.loadFromFile("assets/mage/Idle.png") ||
+        !walkTex.loadFromFile("assets/mage/Walk.png") ||
+        !runTex.loadFromFile("assets/mage/Run.png") ||
+        !attackTex.loadFromFile("assets/mage/Attack_3.png") ||
+        !deathTex.loadFromFile("assets/mage/Dead.png")) {
+        throw std::runtime_error("Nie można załadować tekstur Mage’a");
+    }
     maxHp = 100;
     hp = maxHp;
-    damage = 25;
-    range = 200.f;
-    attackCooldown = 1.2f;
-    attackTimer = 0.f;
-    level = 1;
-
     frameSize = {128, 128};
-    frameTime = 0.15f;
-
-    // Ładowanie tekstur animacji
-    if (!idleTex.loadFromFile("assets/Idle.png") ||
-        !walkTex.loadFromFile("assets/Walk.png") ||
-        !runTex.loadFromFile("assets/Run.png") ||
-        !attackTex.loadFromFile("assets/Attack_1.png") ||
-        !deathTex.loadFromFile("assets/Dead.png")) {
-        throw std::runtime_error("Nie można załadować tekstur maga.");
-    }
-
-    sprite.setTexture(idleTex);
-    sprite.setTextureRect({0, 0, frameSize.x, frameSize.y});
-    sprite.setPosition(spawnPoint);
-    sprite.setOrigin(frameSize.x / 2.f, frameSize.y / 2.f);
+    switchState(MageState::Idle);
 }
 
 void Mage::update(float deltaTime, const sf::RenderWindow& window,
@@ -43,74 +40,18 @@ void Mage::update(float deltaTime, const sf::RenderWindow& window,
     updateHpBar();
     updateAnimation(deltaTime);
 
-    // 🔧 automatyczne wyjście ze stanu Attack po zakończeniu animacji
-    if (state == MageState::Attack && currentFrame >= frameCount - 1 && animationTimer == 0.f)
-        switchState(MageState::Idle);
-}
-
-void Mage::handleMovement(float deltaTime) {
-    sf::Vector2f moveDir(0.f, 0.f);
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) moveDir.y -= 1.f;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) moveDir.y += 1.f;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) moveDir.x -= 1.f;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) moveDir.x += 1.f;
-
-    if (moveDir.x != 0.f || moveDir.y != 0.f) {
-        float len = std::sqrt(moveDir.x * moveDir.x + moveDir.y * moveDir.y);
-        moveDir /= len;
-
-        float moveSpeed = speed;
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::LShift)) {
-            moveSpeed *= 1.5f;
-            switchState(MageState::Run);
-        } else {
-            switchState(MageState::Walk);
-        }
-
-        sprite.move(moveDir * moveSpeed * deltaTime);
-    } else {
+    if (state == MageState::Attack && currentFrame == frameCount - 1) {
         switchState(MageState::Idle);
     }
-}
 
-void Mage::handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies,
-                        const sf::RenderWindow& window) {
-    if (!attackQueued) return;
-    if (attackTimer < attackCooldown) return;
-
-
-        switchState(MageState::Attack);
-        currentFrame = 0;
-        animationTimer = 0.f;
-        attackTimer = 0.f;
-
-        for (auto& enemy : enemies) {
-            if (!enemy->isDead()) {
-                float dist = std::hypot(enemy->getPosition().x - sprite.getPosition().x,
-                                        enemy->getPosition().y - sprite.getPosition().y);
-                if (dist <= range) {
-                    enemy->takeDamage(damage);
-                    std::cout << "[HIT] Zadałem obrażenia!\n";
-                    break;
-                }
-            }
-        }
-        attackQueued = false;
-
+    // Spell logic usunięty
 }
 
 void Mage::draw(sf::RenderWindow& window) {
     window.draw(sprite);
-
-    if (!isDead()) {
-        sf::Vector2f spritePos = sprite.getPosition();
-        hpBarBg.setPosition(spritePos.x - 20.f, spritePos.y - 30.f);
-        hpBar.setPosition(hpBarBg.getPosition());
-
-        window.draw(hpBarBg);
-        window.draw(hpBar);
-    }
+    window.draw(hpBarBg);
+    window.draw(hpBar);
+    // Spells usunięte
 }
 
 void Mage::takeDamage(int dmg) {
@@ -132,8 +73,66 @@ void Mage::respawn() {
     switchState(MageState::Idle);
 }
 
+void Mage::queueAttack() {
+    attackQueued = true;
+}
+
+void Mage::queueExtraAttack() {
+    // Można tu dodać np. AoE
+}
+
+void Mage::handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies,
+                        const sf::RenderWindow& window) {
+    if (!attackQueued || attackTimer < attackCooldown)
+        return;
+
+    switchState(MageState::Attack);
+    currentFrame = 0;
+    animationTimer = 0.f;
+    attackTimer = 0.f;
+
+    // Spell usunięty
+    attackQueued = false;
+}
+
+void Mage::handleMovement(float deltaTime) {
+    sf::Vector2f moveDir(0.f, 0.f);
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) moveDir.y -= 1.f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) moveDir.y += 1.f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) moveDir.x -= 1.f;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) moveDir.x += 1.f;
+
+    if (moveDir != sf::Vector2f(0.f, 0.f)) {
+        moveDir /= std::sqrt(moveDir.x * moveDir.x + moveDir.y * moveDir.y);
+        sprite.move(moveDir * speed * deltaTime);
+
+        sprite.setScale(moveDir.x < -0.1f ? -1.f : 1.f, 1.f);
+        sprite.setOrigin(frameSize.x / 2.f, frameSize.y / 2.f);
+
+        if (state != MageState::Walk && state != MageState::Attack)
+            switchState(MageState::Walk);
+    } else if (state != MageState::Idle && state != MageState::Attack && state != MageState::Dead) {
+        switchState(MageState::Idle);
+    }
+}
+
+void Mage::updateAnimation(float deltaTime) {
+    animationTimer += deltaTime;
+    if (animationTimer >= frameTime) {
+        if (state == MageState::Dead) {
+            if (currentFrame < frameCount - 1)
+                currentFrame++;
+        } else {
+            currentFrame = (currentFrame + 1) % frameCount;
+        }
+
+        sprite.setTextureRect({currentFrame * frameSize.x, 0, frameSize.x, frameSize.y});
+        animationTimer = 0.f;
+    }
+}
+
 void Mage::switchState(MageState newState) {
-    if (state == newState) return;
     state = newState;
     currentFrame = 0;
     animationTimer = 0.f;
@@ -141,30 +140,36 @@ void Mage::switchState(MageState newState) {
 }
 
 void Mage::updateTexture() {
+    sf::Texture* tex = nullptr;
+
     switch (state) {
     case MageState::Idle:
-        sprite.setTexture(idleTex); frameCount = 6; break;
+        tex = &idleTex;
+        frameCount = 6;
+        break;
     case MageState::Walk:
-        sprite.setTexture(walkTex); frameCount = 7; break;
-    case MageState::Run:
-        sprite.setTexture(runTex); frameCount = 8; break;
+        tex = &walkTex;
+        frameCount = 7;
+        break;
+    case MageState::Dash:
+        tex = &runTex;
+        frameCount = 6;
+        break;
     case MageState::Attack:
-        sprite.setTexture(attackTex); frameCount = 10; break;
+        tex = &attackTex;
+        frameCount = 7;
+        break;
     case MageState::Dead:
-        sprite.setTexture(deathTex); frameCount = 4; break;
-// użycie tej samej animacji
+        tex = &deathTex;
+        frameCount = 4;
+        break;
+    case MageState::Win:
+        break;
     }
-    sprite.setTextureRect({0, 0, frameSize.x, frameSize.y});
-}
 
-void Mage::updateAnimation(float deltaTime) {
-    animationTimer += deltaTime;
-    if (animationTimer >= frameTime) {
-        animationTimer = 0.f;
-        if (state == MageState::Dead && currentFrame >= frameCount - 1) {
-            return;
-        }
-        currentFrame = (currentFrame + 1) % frameCount;
-        sprite.setTextureRect({currentFrame * frameSize.x, 0, frameSize.x, frameSize.y});
-    }
+    if (tex && sprite.getTexture() != tex)
+        sprite.setTexture(*tex);
+
+    sprite.setTextureRect({0, 0, frameSize.x, frameSize.y});
+    sprite.setOrigin(frameSize.x / 2.f, frameSize.y / 2.f);
 }

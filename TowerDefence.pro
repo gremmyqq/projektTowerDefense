@@ -31,7 +31,9 @@ SOURCES += \
         mage.cpp \
         main.cpp \
         Enemy.cpp \
-        EnemyRegular.cpp
+        EnemyRegular.cpp \
+        samurai.cpp \
+        spell.cpp
 
 HEADERS += \
         Archer.h \
@@ -53,4 +55,6 @@ HEADERS += \
         TowerArcher.h \
         TowerField.h \
         arrow.h \
-        mage.h
+        mage.h \
+        samurai.h \
+        spell.h
