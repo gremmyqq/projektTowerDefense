@@ -51,9 +51,6 @@ private:
 
     sf::Vector2f spawnPosition;
 
-    int maxHp;
-    int hp;
-
     int frameCount = 6;
     int currentFrame = 0;
     float animationTimer = 0.f;
@@ -65,7 +62,6 @@ private:
     void updateAnimation(float deltaTime);
     void updateTexture();
     void switchState(ArcherState newState);
-    void updateHpBar();
     void queueExtraAttack() override;
 
 

@@ -19,7 +19,7 @@ Knight::Knight(const sf::Vector2f& spawnPoint, const sf::Texture& texture)
         throw std::runtime_error("Nie można załadować tekstur Knighta");
     }
 
-    sprite.setTexture(walk1Tex);
+    sprite.setTexture(idleTex);
     sprite.setTextureRect({0, 0, frameSize.x, frameSize.y});
     sprite.setOrigin(frameSize.x / 2.f, frameSize.y / 2.f);
 
@@ -53,7 +53,7 @@ void Knight::update(float deltaTime, const sf::RenderWindow& window,
 
 void Knight::draw(sf::RenderWindow& window) {
     if (state != KnightState::Dead) {
-        hpBarBg.setPosition(sprite.getPosition().x - 20.f, sprite.getPosition().y - 40.f);
+        hpBarBg.setPosition(sprite.getPosition().x - 20.f, sprite.getPosition().y - 60.f);
         hpBar.setPosition(hpBarBg.getPosition());
         window.draw(hpBarBg);
         window.draw(hpBar);
@@ -171,6 +171,14 @@ void Knight::handleMovement(float deltaTime) {
         float currentSpeed = dashing ? dashSpeed : speed;
         sprite.move(moveDir * currentSpeed * deltaTime);
 
+        // Obracanie sprite'a względem kierunku ruchu
+        if (moveDir.x < -0.1f)
+            sprite.setScale(-1.f, 1.f);
+        else if (moveDir.x > 0.1f)
+            sprite.setScale(1.f, 1.f);
+
+        sprite.setOrigin(frameSize.x / 2.f, frameSize.y / 2.f);
+
         if (!dashing && state != KnightState::Walk && state != KnightState::Attack)
             switchState(KnightState::Walk);
     } else {
@@ -188,7 +196,6 @@ void Knight::handleMovement(float deltaTime) {
         }
     }
 }
-
 void Knight::updateTexture() {
     sf::Texture* newTexture = nullptr;
 

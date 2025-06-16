@@ -15,10 +15,6 @@ HeroBase::HeroBase(const sf::Vector2f& spawnPoint, const sf::Texture& texture)
     hpBar.setFillColor(sf::Color::Green);
 }
 
-void HeroBase::updateHpBar() {
-    float ratio = static_cast<float>(hp) / static_cast<float>(maxHp);
-    hpBar.setSize({40.f * ratio, 5.f});
-}
 
 void HeroBase::takeDamage(int dmg) {
     hp -= dmg;
@@ -52,3 +48,12 @@ void HeroBase::upgrade() {
     range += 10.f;
     hp = maxHp;
 }
+void HeroBase::updateHpBar() {
+    float ratio = static_cast<float>(hp) / maxHp;
+    hpBar.setSize({hpBarBg.getSize().x * ratio, hpBarBg.getSize().y});
+
+    sf::Vector2f center = sprite.getPosition();
+    hpBarBg.setPosition(center.x - hpBarBg.getSize().x / 2.f, center.y - frameSize.y / 2.f - 12.f);
+    hpBar.setPosition(hpBarBg.getPosition());
+}
+
