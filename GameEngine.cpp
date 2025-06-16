@@ -132,14 +132,33 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    buildShop.addItem("Postaw Generator", 30, [this]() {
-        selectedBuildType = BuildType::Generator;
+    buildShop.addItem("Generator Drewna", 30, [this]() {
+        selectedBuildType = BuildType::GeneratorWood;
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
             buildShop.toggleVisible(false);
             selectedField = nullptr;
         }
     });
+
+    buildShop.addItem("Generator Żelaza", 40, [this]() {
+        selectedBuildType = BuildType::GeneratorIron;
+        if (selectedField) {
+            selectedField->handleClick(selectedBuildType, *this);
+            buildShop.toggleVisible(false);
+            selectedField = nullptr;
+        }
+    });
+
+    buildShop.addItem("Generator Żywności", 35, [this]() {
+        selectedBuildType = BuildType::GeneratorFood;
+        if (selectedField) {
+            selectedField->handleClick(selectedBuildType, *this);
+            buildShop.toggleVisible(false);
+            selectedField = nullptr;
+        }
+    });
+
 
     upgradeShop.addItem("Ulepsz wieżę", 100, [this]() {
         if (selectedField) {
@@ -156,6 +175,8 @@ GameEngine::GameEngine(sf::RenderWindow& window)
 
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.3f, window.getSize().y * 0.3f)));
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.7f, window.getSize().y * 0.7f)));
+    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.5f, window.getSize().y * 0.5f)));
+    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.4f, window.getSize().y * 0.2f)));
     //initHeroSelectionUI();
     const std::string tilePaths[3] = {
         "assets/Tile_01.png",

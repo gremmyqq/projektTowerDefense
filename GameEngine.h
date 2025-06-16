@@ -36,6 +36,7 @@ public:
     static GameEngine* instance;  // ← dodaj to
     Castle& getCastle() { return castle; }  // ← getter
 
+    int* getPlayerResourcesPointer() { return &playerResources; }
 
 private:
     sf::RenderWindow& window;
