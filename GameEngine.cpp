@@ -132,7 +132,6 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-<<<<<<< HEAD
     buildShop.addItem("Postaw Katapulte", 250, [this]() {
         selectedBuildType = BuildType::TowerCatapult;
         if (selectedField) {
@@ -142,12 +141,9 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    buildShop.addItem("Postaw Generator", 30, [this]() {
-        selectedBuildType = BuildType::Generator;
-=======
     buildShop.addItem("Generator Drewna", 30, [this]() {
         selectedBuildType = BuildType::GeneratorWood;
->>>>>>> 0bbb0ebd7a7bb0008dd1e77ad21430fcdf3a2312
+
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
             buildShop.toggleVisible(false);
@@ -155,9 +151,18 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-<<<<<<< HEAD
+
     upgradeShop.addItem("Ulepsz wieżę", 200, [this]() {
-=======
+        if (selectedField) {
+            if (auto* tower = dynamic_cast<TowerField*>(selectedField)) {
+                tower->upgrade();
+                selectedField = nullptr;
+                upgradeShop.toggleVisible(false);
+            }
+
+        }
+    });
+
     buildShop.addItem("Generator Żelaza", 40, [this]() {
         selectedBuildType = BuildType::GeneratorIron;
         if (selectedField) {
@@ -175,21 +180,6 @@ GameEngine::GameEngine(sf::RenderWindow& window)
             selectedField = nullptr;
         }
     });
-
-
-    upgradeShop.addItem("Ulepsz wieżę", 100, [this]() {
->>>>>>> 0bbb0ebd7a7bb0008dd1e77ad21430fcdf3a2312
-        if (selectedField) {
-            if (auto* tower = dynamic_cast<TowerField*>(selectedField)) {
-                tower->upgrade();
-                selectedField = nullptr;
-                upgradeShop.toggleVisible(false);
-            }
-
-        }
-    });
-
-
 
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.3f, window.getSize().y * 0.3f)));
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.7f, window.getSize().y * 0.7f)));
