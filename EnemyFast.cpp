@@ -2,9 +2,9 @@
 
 EnemyFast::EnemyFast(const std::vector<sf::Vector2f>& path)
     : Enemy(path) {
-    maxHealth = 80;
+    maxHealth = 120;
     health = maxHealth;
-    speed = 120;
+    speed = 150;
 
     texture.loadFromFile("assets/enemy_fast.png");
     sprite.setTexture(texture);

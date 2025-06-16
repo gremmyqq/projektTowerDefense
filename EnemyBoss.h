@@ -28,8 +28,8 @@ private:
     float phaseTimer = 0.f;
     float chargeDuration = 6 * 0.2f;  // 6 klatek × 0.2s
     float dashDuration = 6 * 0.2f;    // 6 klatek
-    float dashSpeed = 800.f;
-    float dashDistance = 300.f;
+    float dashSpeed = 600.f;
+    float dashDistance = 250.f;
     float dashedDistance = 0.f;
     sf::Vector2f dashDirection;
     float attackTimer = 0.f;

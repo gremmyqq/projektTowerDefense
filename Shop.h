@@ -22,8 +22,6 @@ public:
     void toggleVisible(bool show);
 
     bool isVisible() const;
-
-private:
     struct ShopItem {
         std::string name;
         int cost;
@@ -31,8 +29,12 @@ private:
         sf::Text label;
         std::function<void()> onBuy;
     };
-
     std::vector<ShopItem> items;
+
+private:
+
+
+
     sf::Vector2f basePosition;
     const sf::Font* font = nullptr;
     int* gold = nullptr;

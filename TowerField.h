@@ -8,10 +8,12 @@ class TowerField : public Field {
 public:
     explicit TowerField(const sf::Vector2f& pos);
 
-    void update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies) override;
+    virtual void update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies) override;
     void draw(sf::RenderWindow& window) override;
     bool contains(const sf::Vector2f& point) const override;
     void handleClick(BuildType, GameEngine&) override;
+    virtual void upgrade() {}
+
 
 protected:
     virtual void attack(std::vector<std::unique_ptr<Enemy>>& enemies);

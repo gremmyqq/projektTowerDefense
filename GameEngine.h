@@ -21,6 +21,7 @@
 #include "TowerField.h"
 #include "GeneratorField.h"
 #include "TowerArcher.h"
+#include "TowerWizard.h"
 
 class GameEngine {
 public:
@@ -45,7 +46,9 @@ private:
     std::unique_ptr<HeroBase> hero;
     Field* selectedField = nullptr;
     Shop shop;
-    Shop towerShop;
+    Shop buildShop;
+    Shop upgradeShop;
+
 
     sf::Font uiFont;
     int playerResources = 1000;

@@ -4,7 +4,8 @@
 enum class BuildType {
     None,
     Generator,
-    TowerArcher
+    TowerArcher,
+    TowerWizard
 };
 
 #endif

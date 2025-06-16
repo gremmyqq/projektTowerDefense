@@ -22,7 +22,7 @@ private:
     sf::Texture arrowTexture;
     float shootCooldown = 2.0f;
     float shootTimer = 0.f;
-    float attackRange = 100.0f;
+    float attackRange = 200.0f;
     sf::Vector2f lastHeroPosition;
 
 };

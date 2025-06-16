@@ -1,8 +1,8 @@
-#include "TowerArcher.h"
+#include "TowerWizard.h"
 #include <cmath>
 #include <iostream>
 
-TowerArcher::TowerArcher(const sf::Vector2f& pos)
+TowerWizard::TowerWizard(const sf::Vector2f& pos)
     : TowerField(pos)
 {
     sprite.setOrigin(frameWidth / 2.f, frameHeight / 2.f);
@@ -11,24 +11,26 @@ TowerArcher::TowerArcher(const sf::Vector2f& pos)
     shape.setFillColor(sf::Color::Transparent);
 
     loadAnimation(AnimationType::Idle);
-    if (!arrowTexture.loadFromFile("assets/ArcherTower/arrow.png")) {
+    if (!arrowTexture.loadFromFile("assets/WizardTower/FB500-1_purple.png")) {
         std::cerr << "[BŁĄD] Nie można załadować strzały!\n";
     }
 
 }
 
-void TowerArcher::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
+void TowerWizard::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
     for (auto& enemy : enemies) {
+
         if (enemy->isDead()) continue;
 
         float dist = std::hypot(
             enemy->getPosition().x - shape.getPosition().x,
             enemy->getPosition().y - shape.getPosition().y
             );
-        std::cout<<dist<<"\n";
+        //std::cout<<timeSinceLastAttack<<"\n";
 
         if (dist <= range && timeSinceLastAttack >= attackCooldown) {
             arrows.emplace_back(shape.getPosition(), enemy->getPosition(), arrowTexture);
+
 
             std::cout<<"strzal\n";
             timeSinceLastAttack = 0.f;
@@ -37,7 +39,7 @@ void TowerArcher::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
     }
 }
 
-void TowerArcher::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies) {
+void TowerWizard::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies) {
     timeSinceLastAttack += deltaTime;
 
     if (isUpgrading) {
@@ -73,7 +75,7 @@ void TowerArcher::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& e
 
 }
 
-void TowerArcher::draw(sf::RenderWindow& window) {
+void TowerWizard::draw(sf::RenderWindow& window) {
     window.draw(sprite);
     for (auto& arrow : arrows) {
         arrow.draw(window);
@@ -81,7 +83,7 @@ void TowerArcher::draw(sf::RenderWindow& window) {
 
 }
 
-void TowerArcher::updateAnimation(float deltaTime) {
+void TowerWizard::updateAnimation(float deltaTime) {
     if (frameCount <= 1) return; // ❗ NIE animuj jeśli tylko jedna klatka
 
     animTimer += deltaTime;
@@ -110,12 +112,12 @@ void TowerArcher::updateAnimation(float deltaTime) {
 
 
 
-void TowerArcher::loadAnimation(AnimationType type) {
+void TowerWizard::loadAnimation(AnimationType type) {
     std::string path;
     if (type == AnimationType::Idle) {
-        path = "assets/ArcherTower/2 Idle/" + std::to_string(level) + ".png";
+        path = "assets/WizardTower/Idle" + std::to_string(level) + ".png";
     } else {
-        path = "assets/ArcherTower/1 Upgrade/" + std::to_string(level) + ".png";
+        path = "assets/WizardTower/Upgrade" + std::to_string(level) + ".png";
     }
 
     if (!idleTexture.loadFromFile(path)) {
@@ -129,10 +131,8 @@ void TowerArcher::loadAnimation(AnimationType type) {
     if (type == AnimationType::Idle) {
         if (level == 1)
             frameCount = 1;
-        else if (level <= 3)
-            frameCount = 4;
         else
-            frameCount = 6;
+            frameCount = 4;
     } else {
         frameCount = 4;
     }
@@ -142,7 +142,7 @@ void TowerArcher::loadAnimation(AnimationType type) {
 
 }
 
-void TowerArcher::upgrade() {
+void TowerWizard::upgrade() {
     if (isUpgrading) {
         std::cout << "[INFO] Wieża już się ulepsza\n";
         return;
@@ -154,7 +154,6 @@ void TowerArcher::upgrade() {
         isUpgrading = true;
         upgradeTime = 0.f;
         loadAnimation(AnimationType::Upgrade);
-
         damage = static_cast<int>(damage * 1.1f);
         range *= 1.05f;
         attackCooldown *= 0.95f;
@@ -164,6 +163,6 @@ void TowerArcher::upgrade() {
 }
 
 
-bool TowerArcher::contains(const sf::Vector2f& point) const {
+bool TowerWizard::contains(const sf::Vector2f& point) const {
     return sprite.getGlobalBounds().contains(point);
 }
