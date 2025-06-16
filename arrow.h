@@ -25,6 +25,7 @@ private:
     sf::Vector2f velocity;
     float speed = 1000.f;
     bool markedForRemoval = false;
+    sf::Vector2f target;
 };
 
 #endif

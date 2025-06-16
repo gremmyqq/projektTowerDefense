@@ -1,7 +1,9 @@
 #include "Arrow.h"
 #include <cmath>
 
-Arrow::Arrow(const sf::Vector2f& startPos, const sf::Vector2f& targetPos, const sf::Texture& texture) {
+Arrow::Arrow(const sf::Vector2f& startPos, const sf::Vector2f& targetPos, const sf::Texture& texture)
+    : target(targetPos) {
+
     sprite.setTexture(texture);
     sprite.setPosition(startPos);
     sprite.setOrigin(texture.getSize().x / 2.f, texture.getSize().y / 2.f);
@@ -15,12 +17,25 @@ Arrow::Arrow(const sf::Vector2f& startPos, const sf::Vector2f& targetPos, const 
 }
 
 void Arrow::update(float deltaTime) {
+    if (reachedTarget) return;
+
     sprite.move(velocity * deltaTime);
+
+    sf::Vector2f toTarget = target - sprite.getPosition();
+    float distanceSq = toTarget.x * toTarget.x + toTarget.y * toTarget.y;
+
+    if (distanceSq < 16.f * 16.f) {  // 16px margines
+        reachedTarget = true;
+    }
 }
 
+
 void Arrow::draw(sf::RenderWindow& window) {
-    window.draw(sprite);
+    if (!reachedTarget) {
+        window.draw(sprite);
+    }
 }
+
 
 bool Arrow::checkCollision(Enemy& enemy) {
     sf::FloatRect enemyBounds(enemy.getPosition().x - 20, enemy.getPosition().y - 20, 40, 40);
