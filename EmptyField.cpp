@@ -4,6 +4,7 @@
 #include "TowerField.h"
 #include "GeneratorField.h"
 #include "TowerWizard.h"
+
 #include <iostream>
 
 // definicja statycznej tekstury
@@ -37,14 +38,26 @@ bool EmptyField::contains(const sf::Vector2f& point) const {
 void EmptyField::handleClick(BuildType selectedType, GameEngine& engine) {
     std::cout << "[DEBUG] EmptyField::handleClick wywołane\n";
 
-    if (selectedType == BuildType::Generator) {
-        engine.replaceField(this, std::make_unique<GeneratorField>(fieldSprite.getPosition()));
-    } else if (selectedType == BuildType::TowerArcher) {
+    if (selectedType == BuildType::GeneratorWood) {
+        auto gen = std::make_unique<GeneratorField>(fieldSprite.getPosition(), GeneratorType::Wood);
+        gen->setResourcePointer(engine.getPlayerResourcesPointer());
+        engine.replaceField(this, std::move(gen));
+    }
+    else if (selectedType == BuildType::GeneratorIron) {
+        auto gen = std::make_unique<GeneratorField>(fieldSprite.getPosition(), GeneratorType::Iron);
+        gen->setResourcePointer(engine.getPlayerResourcesPointer());
+        engine.replaceField(this, std::move(gen));
+    }
+    else if (selectedType == BuildType::GeneratorFood) {
+        auto gen = std::make_unique<GeneratorField>(fieldSprite.getPosition(), GeneratorType::Food);
+        gen->setResourcePointer(engine.getPlayerResourcesPointer());
+        engine.replaceField(this, std::move(gen));
+    }
+    else if (selectedType == BuildType::TowerArcher) {
         engine.replaceField(this, std::make_unique<TowerArcher>(fieldSprite.getPosition()));
     } else if (selectedType == BuildType::TowerWizard) {
         engine.replaceField(this, std::make_unique<TowerWizard>(fieldSprite.getPosition()));
     } else if (selectedType == BuildType::TowerCatapult) {
         engine.replaceField(this, std::make_unique<TowerCatapult>(fieldSprite.getPosition()));
     }
-
 }
