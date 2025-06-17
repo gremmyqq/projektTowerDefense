@@ -20,8 +20,8 @@ void Shop::addItem(const std::string& name, int cost, std::function<void()> acti
     item.cost = cost;
     item.onBuy = action;
 
-    item.button.setSize({140.f, 40.f});
-    item.button.setFillColor(sf::Color(100, 100, 250));
+    item.button.setSize({180.f, 40.f});
+    item.button.setFillColor(sf::Color(150, 150, 150));
     item.button.setOutlineThickness(2.f);
     item.button.setOutlineColor(sf::Color::Black);
     item.button.setPosition(basePosition.x, basePosition.y + items.size() * 50.f);

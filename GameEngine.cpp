@@ -141,15 +141,15 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     });
 
     buildShop.setFont(uiFont);
-    buildShop.setPosition({300.f, 500.f});
+    buildShop.setPosition({window.getSize().x-200.f, 300.f});
     buildShop.setGoldPointer(&playerResources);
 
     upgradeShop.setFont(uiFont);
-    upgradeShop.setPosition({300.f, 500.f});
+    upgradeShop.setPosition({window.getSize().x-200.f, 300.f});
     upgradeShop.setGoldPointer(&playerResources);
 
 
-    buildShop.addItem("Postaw Łucznika", 100, [this]() {
+    buildShop.addItem("Build Archer", 100, [this]() {
         selectedBuildType = BuildType::TowerArcher;
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
@@ -158,7 +158,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    buildShop.addItem("Postaw Wizard", 150, [this]() {
+    buildShop.addItem("Build Wizard", 150, [this]() {
         selectedBuildType = BuildType::TowerWizard;
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
@@ -167,7 +167,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    buildShop.addItem("Postaw Katapulte", 250, [this]() {
+    buildShop.addItem("Build Catapulte", 250, [this]() {
         selectedBuildType = BuildType::TowerCatapult;
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
@@ -176,7 +176,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    buildShop.addItem("Generator Drewna", 30, [this]() {
+    buildShop.addItem("Wood Generator", 30, [this]() {
         selectedBuildType = BuildType::GeneratorWood;
 
         if (selectedField) {
@@ -187,7 +187,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     });
 
 
-    upgradeShop.addItem("Ulepsz wieżę", 200, [this]() {
+    upgradeShop.addItem("Upgrade Tower", 200, [this]() {
         if (selectedField) {
             if (auto* tower = dynamic_cast<TowerField*>(selectedField)) {
                 tower->upgrade(this);
@@ -198,7 +198,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    buildShop.addItem("Generator Żelaza", 40, [this]() {
+    buildShop.addItem("Iron Generator", 40, [this]() {
         selectedBuildType = BuildType::GeneratorIron;
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
@@ -207,7 +207,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    buildShop.addItem("Generator Żywności", 35, [this]() {
+    buildShop.addItem("Food Generator", 35, [this]() {
         selectedBuildType = BuildType::GeneratorFood;
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
@@ -216,9 +216,9 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.3f, window.getSize().y * 0.3f)));
-    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.7f, window.getSize().y * 0.7f)));
-    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.5f, window.getSize().y * 0.5f)));
+    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.3f, window.getSize().y * 0.35f)));
+    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.67f, window.getSize().y * 0.7f)));
+    fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.42f, window.getSize().y * 0.55f)));
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.4f, window.getSize().y * 0.2f)));
     //initHeroSelectionUI();
     const std::string tilePaths[3] = {
@@ -242,13 +242,13 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     }
 
     // Ustaw pozycje tak, by kafelki były od prawej krawędzi do lewej
-    float startX = window.getSize().x - 600.f;
+    float startX = window.getSize().x - 215.f;
     for (int i = 0; i < 3; ++i) {
         float x = startX;
         for (int j = 0; j < i; ++j) {
             x += cornerTileTextures[j].getSize().x * cornerTileSprites[j].getScale().x;
         }
-        cornerTileSprites[i].setPosition(x, 28.f);
+        cornerTileSprites[i].setPosition(x, 150.f);
     }
     if (!coinTexture.loadFromFile("assets/2.png")) {
         throw std::runtime_error("Nie można załadować assets/2.png");
@@ -256,7 +256,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     coinSprite.setTexture(coinTexture);
     coinSprite.setTextureRect(sf::IntRect(0, 0, 16, 16));  // pierwsza klatka
     coinSprite.setScale(2.8f, 2.8f);  // powiększenie
-    coinSprite.setPosition(window.getSize().x - 470.f, 44.f); // prawy górny róg
+    coinSprite.setPosition(window.getSize().x - 100.f, 165.f); // prawy górny róg
     goldText.setFont(uiFont);
     goldText.setCharacterSize(24);
     goldText.setFillColor(sf::Color::White);
@@ -277,7 +277,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
 
 
     achievementsTitle.setFont(uiFont);
-    achievementsTitle.setString("Osiągnięcia");
+    achievementsTitle.setString("Achievements");
     achievementsTitle.setCharacterSize(28);
     achievementsTitle.setFillColor(sf::Color::Yellow);
     achievementsTitle.setPosition(achievementsPanel.getPosition().x + 100, achievementsPanel.getPosition().y + 10);
@@ -436,12 +436,11 @@ void GameEngine::handleEvents() {
                 soundEnabled = !soundEnabled;
                 soundButtonSprite.setTexture(soundEnabled ? soundButtonTextureOn : soundButtonTextureOff);
 
-                // 🔇 Wyciszenie muzyki
+                // Wyciszenie muzyki
                 backgroundMusic.setVolume(soundEnabled ? 40.f : 0.f);
                 return;
             }
 
-            // Kliknięcie w pole budowy
             // Kliknięcie w pole budowy
             bool clickedOnField = false;
 
@@ -462,8 +461,10 @@ void GameEngine::handleEvents() {
                         upgradeShop.toggleVisible(false);
 
                         if (dynamic_cast<EmptyField*>(selectedField)) {
+                            //buildShop.setPosition(mousePos);
                             buildShop.toggleVisible(true);
                         } else if (dynamic_cast<TowerField*>(selectedField)) {
+                            //upgradeShop.setPosition(mousePos);
                             upgradeShop.toggleVisible(true);
                         }
                     }
@@ -638,8 +639,8 @@ void GameEngine::replaceField(Field* oldField, std::unique_ptr<Field> newField) 
     }
 }
 void GameEngine::drawStartScreen() {
-    sf::Text text("Kliknij lewym przyciskiem myszy aby rozpoczac", uiFont, 40);
-    text.setPosition(300.f, 300.f);
+    sf::Text text("Click left mouse button to play", uiFont, 40);
+    text.setPosition(window.getSize().x/2 -300.f, window.getSize().y/2);
     text.setFillColor(sf::Color::White);
     window.draw(startScreenSprite);
     window.draw(text);
@@ -712,11 +713,11 @@ void GameEngine::updateAchievementTexts() {
     achievementTexts.clear();
 
     std::vector<std::pair<std::string, AchievementSystem::Type>> list = {
-        {"Zabito pierwszego wroga", AchievementSystem::Type::FirstKill},
-        {"Kupiono bohatera", AchievementSystem::Type::HeroBought},
-        {"Ulepszono zamek", AchievementSystem::Type::CastleUpgraded},
-        {"Wieża osiągnęła poziom 4", AchievementSystem::Type::TowerToLevel4},
-        {"Pokonano bossa", AchievementSystem::Type::BossKilled}
+        {"First kill", AchievementSystem::Type::FirstKill},
+        {"Buy a Hero", AchievementSystem::Type::HeroBought},
+        {"Upgrade castle", AchievementSystem::Type::CastleUpgraded},
+        {"Upgrade Archer Tower to level 4", AchievementSystem::Type::TowerToLevel4},
+        {"Defeated the Boss", AchievementSystem::Type::BossKilled}
     };
 
     float y = achievementsPanel.getPosition().y + 60.f;
@@ -726,7 +727,7 @@ void GameEngine::updateAchievementTexts() {
         txt.setFont(uiFont);
         txt.setCharacterSize(20);
         txt.setFillColor(achievements.isUnlocked(type) ? sf::Color::Green : sf::Color(150, 150, 150));
-        txt.setString((achievements.isUnlocked(type) ? "✓ " : "✗ ") + desc);
+        txt.setString((achievements.isUnlocked(type) ? "V " : "X ") + desc);
         txt.setPosition(achievementsPanel.getPosition().x + 30.f, y);
         y += 35.f;
         achievementTexts.push_back(txt);
