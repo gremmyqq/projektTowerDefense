@@ -14,7 +14,23 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     spawnTimer(0.f),
     spawnInterval(3.f),
     castle(sf::Vector2f(280.f, 1080.f)) {
+    if (!startScreenTexture.loadFromFile("assets/startscreen.jpg")) {
+        throw std::runtime_error("Nie można załadować startscreen.png");
+    }
+    startScreenSprite.setTexture(startScreenTexture);
+    startScreenSprite.setScale(
+        static_cast<float>(window.getSize().x) / startScreenTexture.getSize().x,
+        static_cast<float>(window.getSize().y) / startScreenTexture.getSize().y
+        );
 
+    if (!defeatScreenTexture.loadFromFile("assets/gameove.jpg")) {
+        throw std::runtime_error("Nie można załadować gameover.png");
+    }
+    defeatScreenSprite.setTexture(defeatScreenTexture);
+    defeatScreenSprite.setScale(
+        static_cast<float>(window.getSize().x) / defeatScreenTexture.getSize().x,
+        static_cast<float>(window.getSize().y) / defeatScreenTexture.getSize().y
+        );
     GameEngine::instance = this;
     if (!heroTexture.loadFromFile("assets/hero1.png")) {
         throw std::runtime_error("Nie można załadować assets/hero1.png");
@@ -235,11 +251,27 @@ void GameEngine::run() {
 void GameEngine::handleEvents() {
     sf::Event event;
     while (window.pollEvent(event)) {
-        // 1. Zamknięcie okna / ESC
         if (event.type == sf::Event::Closed ||
             (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Escape)) {
             window.close();
         }
+        if (currentState == GameState::StartScreen) {
+            if (event.type == sf::Event::MouseButtonPressed) {
+                currentState = GameState::Playing;
+            }
+            return;
+        }
+
+
+        if (currentState == GameState::Victory || currentState == GameState::Defeat) {
+            if (event.type == sf::Event::MouseButtonPressed) {
+                //restartGame();  // napisz tę funkcję jeśli chcesz restartować
+            }
+            return;
+        }
+
+        // 1. Zamknięcie okna / ESC
+
 
         // 2. Klawiatura – Q i E dla bohaterów
         if (event.type == sf::Event::KeyPressed) {
@@ -353,6 +385,7 @@ void GameEngine::handleEvents() {
 void GameEngine::update(float deltaTime) {
     spawnClock += deltaTime;
     //std::cout << "[DEBUG] Liczba pól: " << fields.size() << "\n";
+    if (currentState != GameState::Playing) return;
 
     if (roundActive && waveMap.find(currentWave) != waveMap.end()) {
         const auto& wave = waveMap[currentWave];
@@ -428,49 +461,41 @@ void GameEngine::update(float deltaTime) {
                                      }
                                      return e->reachedEnd();
                                  }), enemies.end());
+    if (castle.getHP() <= 0 && currentState == GameState::Playing) {
+        currentState = GameState::Defeat;
+    }
+
+    if (currentWave >= waveMap.size() && enemies.empty() && currentState == GameState::Playing) {
+        currentState = GameState::Victory;
+    }
+
 
 }
 
 void GameEngine::render() {
     window.clear();
-    window.draw(backgroundSprite);
-    castle.draw(window);
 
-    for (auto& field : fields)
-        field->draw(window);
+    switch (currentState) {
+    case GameState::StartScreen:
+        drawStartScreen();
+        break;
 
-    for (auto& enemy : enemies)
-        enemy->draw(window);
+    case GameState::Playing:
+        drawGame();  // przesuń tam aktualny kod renderowania gry
+        break;
 
-    if (hero)
-        hero->draw(window);
-    else
-        //drawHeroSelectionUI();
+    case GameState::Victory:
+        drawVictoryScreen();
+        break;
 
-    if (selectedField)
-        shop.draw(window);
-    if (shop.isVisible())
-        shop.draw(window);
-
-    for (int i = 0; i < 3; ++i) {
-        window.draw(cornerTileSprites[i]);
+    case GameState::Defeat:
+        drawDefeatScreen();
+        break;
     }
 
-    if (buildShop.isVisible()) {
-        buildShop.draw(window);
-    }
-    if (upgradeShop.isVisible()) {
-        upgradeShop.draw(window);
-    }
-
-
-
-    window.draw(coinSprite);
-    window.draw(goldText);
-    window.draw(shopButtonSprite);
-    window.draw(startButtonSprite);
     window.display();
 }
+
 
 
 
@@ -482,5 +507,63 @@ void GameEngine::replaceField(Field* oldField, std::unique_ptr<Field> newField) 
     if (it != fields.end()) {
         *it = std::move(newField);
     }
+}
+void GameEngine::drawStartScreen() {
+    sf::Text text("Kliknij lewym przyciskiem myszy aby rozpoczac", uiFont, 40);
+    text.setPosition(300.f, 300.f);
+    text.setFillColor(sf::Color::White);
+    window.draw(startScreenSprite);
+    window.draw(text);
+}
+
+void GameEngine::drawVictoryScreen() {
+    sf::Text text("Wygrałeś!", uiFont, 50);
+    text.setPosition(400.f, 300.f);
+    text.setFillColor(sf::Color::Green);
+    window.draw(text);
+}
+
+void GameEngine::drawDefeatScreen() {
+    sf::Text text("Game over, kristofer!", uiFont, 50);
+    text.setPosition(400.f, 300.f);
+    text.setFillColor(sf::Color::Red);
+    window.draw(defeatScreenSprite);
+    window.draw(text);
+}
+void GameEngine::drawGame() {
+    window.draw(backgroundSprite);
+    castle.draw(window);
+
+    for (auto& field : fields)
+        field->draw(window);
+
+    for (auto& enemy : enemies)
+        enemy->draw(window);
+
+    if (hero)
+        hero->draw(window);
+
+    if (selectedField)
+        shop.draw(window);
+
+    if (shop.isVisible())
+        shop.draw(window);
+
+    for (int i = 0; i < 3; ++i) {
+        window.draw(cornerTileSprites[i]);
+    }
+
+    if (buildShop.isVisible()) {
+        buildShop.draw(window);
+    }
+
+    if (upgradeShop.isVisible()) {
+        upgradeShop.draw(window);
+    }
+
+    window.draw(coinSprite);
+    window.draw(goldText);
+    window.draw(shopButtonSprite);
+    window.draw(startButtonSprite);
 }
 

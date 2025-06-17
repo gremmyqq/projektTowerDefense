@@ -22,6 +22,14 @@
 #include "GeneratorField.h"
 #include "TowerArcher.h"
 #include "TowerWizard.h"
+enum class GameState {
+    StartScreen,
+    HeroSelection,
+    Playing,
+    RoundTransition,
+    Victory,
+    Defeat
+};
 
 class GameEngine {
 public:
@@ -99,6 +107,8 @@ private:
     HeroType selectedHeroType = HeroType::None;
 
     BuildType selectedBuildType = BuildType::None;
+    GameState currentState = GameState::StartScreen;
+
 
 
 
@@ -110,8 +120,6 @@ sf::RectangleShape archerBtn, knightBtn, mageBtn;
     void handleEvents();
     void update(float deltaTime);
     void render();
-    void initHeroSelectionUI();
-    void drawHeroSelectionUI();
     void handleHeroSelectionClick(const sf::Vector2f& mousePos);
     void spawnEnemy();
     sf::Texture cornerTileTextures[3];
@@ -123,6 +131,15 @@ sf::RectangleShape archerBtn, knightBtn, mageBtn;
     const int coinMaxFrames = 6;
     const float coinFrameDuration = 0.1f;  // czas trwania jednej klatki
     sf::Text goldText;
+    void drawStartScreen();
+    void drawVictoryScreen();
+    void drawDefeatScreen();
+    void drawGame();
+    sf::Texture startScreenTexture;
+    sf::Sprite startScreenSprite;
+
+    sf::Texture defeatScreenTexture;
+    sf::Sprite defeatScreenSprite;
 
 };
 
