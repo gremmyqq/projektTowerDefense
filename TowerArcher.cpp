@@ -25,7 +25,7 @@ void TowerArcher::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
             enemy->getPosition().x - shape.getPosition().x,
             enemy->getPosition().y - shape.getPosition().y
             );
-        std::cout<<dist<<"\n";
+        //std::cout<<dist<<"\n";
 
         if (dist <= range && timeSinceLastAttack >= attackCooldown) {
             arrows.emplace_back(shape.getPosition(), enemy->getPosition(), arrowTexture);
@@ -156,7 +156,9 @@ void TowerArcher::upgrade() {
         loadAnimation(AnimationType::Upgrade);
 
         damage = static_cast<int>(damage * 1.1f);
+
         range *= 1.05f;
+
         attackCooldown *= 0.95f;
     } else {
         std::cout << "[INFO] Maksymalny poziom osiągnięty\n";

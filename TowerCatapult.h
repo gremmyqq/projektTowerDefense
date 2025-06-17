@@ -1,5 +1,5 @@
-#ifndef TOWERARCHER_H
-#define TOWERARCHER_H
+#ifndef TOWERCATAPULT_H
+#define TOWERCATAPULT_H
 
 #include "TowerField.h"
 #include <SFML/Graphics.hpp>
@@ -9,9 +9,9 @@
 
 
 
-class TowerArcher : public TowerField {
+class TowerCatapult : public TowerField {
 public:
-    explicit TowerArcher(const sf::Vector2f& pos);
+    explicit TowerCatapult(const sf::Vector2f& pos);
 
     void attack(std::vector<std::unique_ptr<Enemy>>& enemies) override;
     void update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies) override;
@@ -27,14 +27,14 @@ private:
     sf::Texture arrowTexture;
 
     float animTimer = 0.f;
-    float animInterval = 0.2f;
+    float animInterval = 1.f;
     int currentFrame = 0;
     int frameWidth = 70;
     int frameHeight = 130;
     int frameCount = 1;
 
     int level = 1;
-    int maxLevel = 8;
+    int maxLevel = 4;
 
     bool isUpgrading = false;
     float upgradeTime = 0.f;
@@ -46,10 +46,10 @@ private:
     void updateAnimation(float deltaTime);
     void loadAnimation(AnimationType type);
 
-    float attackCooldown = 1.0f;
+    float attackCooldown = 5.0f;
     float timeSinceLastAttack = 0.0f;
-    float range = 250.f;
-    int damage = 30;
+    float range = 700.f;
+    int damage = 150;
 };
 
-#endif // TOWERARCHER_H
+#endif // TOWERCATAPULT_H

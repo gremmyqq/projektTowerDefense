@@ -5,10 +5,12 @@ enum class BuildType {
     None,
     Generator,
     TowerArcher,
+    TowerWizard,
+    TowerCatapult,
     GeneratorWood,
     GeneratorIron,
     GeneratorFood,
-    TowerWizard
+
 };
 
 

@@ -1,8 +1,8 @@
-#include "TowerWizard.h"
+#include "TowerCatapult.h"
 #include <cmath>
 #include <iostream>
 
-TowerWizard::TowerWizard(const sf::Vector2f& pos)
+TowerCatapult::TowerCatapult(const sf::Vector2f& pos)
     : TowerField(pos)
 {
     sprite.setOrigin(frameWidth / 2.f, frameHeight / 2.f);
@@ -11,26 +11,24 @@ TowerWizard::TowerWizard(const sf::Vector2f& pos)
     shape.setFillColor(sf::Color::Transparent);
 
     loadAnimation(AnimationType::Idle);
-    if (!arrowTexture.loadFromFile("assets/WizardTower/FB500-1_purple.png")) {
+    if (!arrowTexture.loadFromFile("assets/WizardTower/FB500-1.png")) {
         std::cerr << "[BŁĄD] Nie można załadować strzały!\n";
     }
 
 }
 
-void TowerWizard::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
+void TowerCatapult::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
     for (auto& enemy : enemies) {
-
         if (enemy->isDead()) continue;
 
         float dist = std::hypot(
             enemy->getPosition().x - shape.getPosition().x,
             enemy->getPosition().y - shape.getPosition().y
             );
-        //std::cout<<timeSinceLastAttack<<"\n";
+        //std::cout<<dist<<"\n";
 
         if (dist <= range && timeSinceLastAttack >= attackCooldown) {
-            arrows.emplace_back(shape.getPosition(), enemy->getPosition(), arrowTexture);
-
+            arrows.emplace_back(shape.getPosition(), enemy->getPosition(), arrowTexture, 800.f);
 
             std::cout<<"strzal\n";
             timeSinceLastAttack = 0.f;
@@ -39,7 +37,7 @@ void TowerWizard::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
     }
 }
 
-void TowerWizard::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies) {
+void TowerCatapult::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies) {
     timeSinceLastAttack += deltaTime;
 
     if (isUpgrading) {
@@ -75,7 +73,7 @@ void TowerWizard::update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& e
 
 }
 
-void TowerWizard::draw(sf::RenderWindow& window) {
+void TowerCatapult::draw(sf::RenderWindow& window) {
     window.draw(sprite);
     for (auto& arrow : arrows) {
         arrow.draw(window);
@@ -83,7 +81,7 @@ void TowerWizard::draw(sf::RenderWindow& window) {
 
 }
 
-void TowerWizard::updateAnimation(float deltaTime) {
+void TowerCatapult::updateAnimation(float deltaTime) {
     if (frameCount <= 1) return; // ❗ NIE animuj jeśli tylko jedna klatka
 
     animTimer += deltaTime;
@@ -112,12 +110,12 @@ void TowerWizard::updateAnimation(float deltaTime) {
 
 
 
-void TowerWizard::loadAnimation(AnimationType type) {
+void TowerCatapult::loadAnimation(AnimationType type) {
     std::string path;
     if (type == AnimationType::Idle) {
-        path = "assets/WizardTower/Idle" + std::to_string(level) + ".png";
+        path = "assets/CatapultTower/Idle" + std::to_string(level) + ".png";
     } else {
-        path = "assets/WizardTower/Upgrade" + std::to_string(level) + ".png";
+        path = "assets/CatapultTower/Upgrade" + std::to_string(level) + ".png";
     }
 
     if (!idleTexture.loadFromFile(path)) {
@@ -129,9 +127,9 @@ void TowerWizard::loadAnimation(AnimationType type) {
 
     // Ustaw liczbę klatek w zależności od poziomu i typu
     if (type == AnimationType::Idle) {
-        if (level == 1)
+        if (level <= 2)
             frameCount = 1;
-        else
+        else if (level <= 4)
             frameCount = 4;
     } else {
         frameCount = 4;
@@ -142,7 +140,7 @@ void TowerWizard::loadAnimation(AnimationType type) {
 
 }
 
-void TowerWizard::upgrade() {
+void TowerCatapult::upgrade() {
     if (isUpgrading) {
         std::cout << "[INFO] Wieża już się ulepsza\n";
         return;
@@ -154,15 +152,17 @@ void TowerWizard::upgrade() {
         isUpgrading = true;
         upgradeTime = 0.f;
         loadAnimation(AnimationType::Upgrade);
-        damage = static_cast<int>(damage * 1.1f);
-        range *= 1.15f;
-        attackCooldown *= 0.9f;
+
+        damage = static_cast<int>(damage * 1.2f);
+        range *= 1.05f;
+        attackCooldown *= 0.95f;
     } else {
         std::cout << "[INFO] Maksymalny poziom osiągnięty\n";
     }
 }
 
 
-bool TowerWizard::contains(const sf::Vector2f& point) const {
+bool TowerCatapult::contains(const sf::Vector2f& point) const {
     return sprite.getGlobalBounds().contains(point);
 }
+

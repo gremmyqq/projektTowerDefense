@@ -130,7 +130,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     upgradeShop.setGoldPointer(&playerResources);
 
 
-    buildShop.addItem("Postaw Łucznika", 50, [this]() {
+    buildShop.addItem("Postaw Łucznika", 100, [this]() {
         selectedBuildType = BuildType::TowerArcher;
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
@@ -139,8 +139,17 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    buildShop.addItem("Postaw Wizard", 80, [this]() {
+    buildShop.addItem("Postaw Wizard", 150, [this]() {
         selectedBuildType = BuildType::TowerWizard;
+        if (selectedField) {
+            selectedField->handleClick(selectedBuildType, *this);
+            buildShop.toggleVisible(false);
+            selectedField = nullptr;
+        }
+    });
+
+    buildShop.addItem("Postaw Katapulte", 250, [this]() {
+        selectedBuildType = BuildType::TowerCatapult;
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
             buildShop.toggleVisible(false);
@@ -150,10 +159,23 @@ GameEngine::GameEngine(sf::RenderWindow& window)
 
     buildShop.addItem("Generator Drewna", 30, [this]() {
         selectedBuildType = BuildType::GeneratorWood;
+
         if (selectedField) {
             selectedField->handleClick(selectedBuildType, *this);
             buildShop.toggleVisible(false);
             selectedField = nullptr;
+        }
+    });
+
+
+    upgradeShop.addItem("Ulepsz wieżę", 200, [this]() {
+        if (selectedField) {
+            if (auto* tower = dynamic_cast<TowerField*>(selectedField)) {
+                tower->upgrade();
+                selectedField = nullptr;
+                upgradeShop.toggleVisible(false);
+            }
+
         }
     });
 
@@ -174,20 +196,6 @@ GameEngine::GameEngine(sf::RenderWindow& window)
             selectedField = nullptr;
         }
     });
-
-
-    upgradeShop.addItem("Ulepsz wieżę", 100, [this]() {
-        if (selectedField) {
-            if (auto* tower = dynamic_cast<TowerField*>(selectedField)) {
-                tower->upgrade();
-                selectedField = nullptr;
-                upgradeShop.toggleVisible(false);
-            }
-
-        }
-    });
-
-
 
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.3f, window.getSize().y * 0.3f)));
     fields.emplace_back(std::make_unique<EmptyField>(sf::Vector2f(window.getSize().x * 0.7f, window.getSize().y * 0.7f)));
@@ -374,6 +382,7 @@ void GameEngine::handleEvents() {
                 selectedField = nullptr;
                 upgradeShop.toggleVisible(false);
                 buildShop.toggleVisible(false);
+                shop.toggleVisible(false);
             }
 
             shop.handleClick(mousePos);

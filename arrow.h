@@ -6,7 +6,8 @@
 
 class Arrow {
 public:
-    Arrow(const sf::Vector2f& startPos, const sf::Vector2f& targetPos, const sf::Texture& texture);
+    Arrow(const sf::Vector2f& startPos, const sf::Vector2f& targetPos, const sf::Texture& texture, float speed = 1000.f);
+
 
     void update(float deltaTime);
     void draw(sf::RenderWindow& window);

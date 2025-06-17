@@ -1,5 +1,6 @@
 #include "EmptyField.h"
 #include "TowerArcher.h"
+#include "TowerCatapult.h"
 #include "TowerField.h"
 #include "GeneratorField.h"
 #include "TowerWizard.h"
@@ -56,5 +57,7 @@ void EmptyField::handleClick(BuildType selectedType, GameEngine& engine) {
         engine.replaceField(this, std::make_unique<TowerArcher>(fieldSprite.getPosition()));
     } else if (selectedType == BuildType::TowerWizard) {
         engine.replaceField(this, std::make_unique<TowerWizard>(fieldSprite.getPosition()));
+    } else if (selectedType == BuildType::TowerCatapult) {
+        engine.replaceField(this, std::make_unique<TowerCatapult>(fieldSprite.getPosition()));
     }
 }

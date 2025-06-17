@@ -1,9 +1,7 @@
 #include "Arrow.h"
 #include <cmath>
 
-Arrow::Arrow(const sf::Vector2f& startPos, const sf::Vector2f& targetPos, const sf::Texture& texture)
-    : target(targetPos) {
-
+Arrow::Arrow(const sf::Vector2f& startPos, const sf::Vector2f& targetPos, const sf::Texture& texture, float speed) {
     sprite.setTexture(texture);
     sprite.setPosition(startPos);
     sprite.setOrigin(texture.getSize().x / 2.f, texture.getSize().y / 2.f);
@@ -15,6 +13,7 @@ Arrow::Arrow(const sf::Vector2f& startPos, const sf::Vector2f& targetPos, const 
     float angle = std::atan2(dir.y, dir.x) * 180 / 3.14159f;
     sprite.setRotation(angle);
 }
+
 
 void Arrow::update(float deltaTime) {
     if (reachedTarget) return;
