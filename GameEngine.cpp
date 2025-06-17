@@ -81,25 +81,6 @@ GameEngine::GameEngine(sf::RenderWindow& window)
 
     uiFont.loadFromFile("assets/arial.ttf");
 
-    achievementsPanel.setSize({400.f, 300.f});
-    achievementsPanel.setFillColor(sf::Color(0, 0, 0, 200));
-    achievementsPanel.setPosition(300.f, 200.f);
-
-    if (!achievementsButtonTexture.loadFromFile("assets/AchiButton.png")) {
-        throw std::runtime_error("Nie można załadować assets/trophy.png");
-    }
-    achievementsButtonSprite.setTexture(achievementsButtonTexture);
-    achievementsButtonSprite.setScale(4.0f, 4.0f);
-    achievementsButtonSprite.setPosition(window.getSize().x - 100.f, 50.f);
-
-
-    achievementsTitle.setFont(uiFont);
-    achievementsTitle.setString("Osiągnięcia");
-    achievementsTitle.setCharacterSize(28);
-    achievementsTitle.setFillColor(sf::Color::Yellow);
-    achievementsTitle.setPosition(achievementsPanel.getPosition().x + 100, achievementsPanel.getPosition().y + 10);
-
-
     shop.setFont(uiFont);
     shop.setPosition({window.getSize().x-200.f, 300.f});
     shop.setGoldPointer(&playerResources);
@@ -273,6 +254,66 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     goldText.setPosition(coinSprite.getPosition().x - 60.f, coinSprite.getPosition().y + 8.f);
     goldText.setString(std::to_string(playerResources));
 
+    //Osiagniecia
+    achievementsPanel.setSize({400.f, 300.f});
+    achievementsPanel.setFillColor(sf::Color(0, 0, 0, 200));
+    achievementsPanel.setPosition(300.f, 200.f);
+
+    if (!achievementsButtonTexture.loadFromFile("assets/AchiButton.png")) {
+        throw std::runtime_error("Nie można załadować assets/trophy.png");
+    }
+    achievementsButtonSprite.setTexture(achievementsButtonTexture);
+    achievementsButtonSprite.setScale(4.0f, 4.0f);
+    achievementsButtonSprite.setPosition(window.getSize().x - 100.f, 50.f);
+
+
+    achievementsTitle.setFont(uiFont);
+    achievementsTitle.setString("Osiągnięcia");
+    achievementsTitle.setCharacterSize(28);
+    achievementsTitle.setFillColor(sf::Color::Yellow);
+    achievementsTitle.setPosition(achievementsPanel.getPosition().x + 100, achievementsPanel.getPosition().y + 10);
+
+    // załaduj dźwięk
+    if (!shootBufferArcher.loadFromFile("assets/Sounds/attackArcher.wav")) {
+        throw std::runtime_error("Nie można załadować attackArcher.wav");
+    }
+    shootSoundsArcher.resize(8);
+    for (auto& s : shootSoundsArcher)
+        s.setBuffer(shootBufferArcher);
+
+    if (!shootBufferWizard.loadFromFile("assets/Sounds/attackWizard.wav")) {
+        throw std::runtime_error("Nie można załadować attackWizard.wav");
+    }
+    shootSoundsWizard.resize(8);
+    for (auto& s : shootSoundsWizard)
+        s.setBuffer(shootBufferWizard);
+
+    if (!shootBufferCatapult.loadFromFile("assets/Sounds/attackCatapult.wav")) {
+        throw std::runtime_error("Nie można załadować attackCatapult.wav");
+    }
+    shootSoundsCatapult.resize(8);
+    for (auto& s : shootSoundsCatapult)
+        s.setBuffer(shootBufferCatapult);
+
+
+    if (!backgroundMusic.openFromFile("assets/Sounds/sound.wav")) {
+        throw std::runtime_error("Nie można załadować assets/music.ogg");
+    }
+    backgroundMusic.setLoop(true);
+    backgroundMusic.setVolume(40.f);  // 0–100
+    backgroundMusic.play();
+
+
+    // załaduj ikony dźwięku
+    if (!soundButtonTextureOn.loadFromFile("assets/sound_on.png") ||
+        !soundButtonTextureOff.loadFromFile("assets/sound_off.png")) {
+        throw std::runtime_error("Brak ikon dźwięku");
+    }
+
+    soundButtonSprite.setTexture(soundButtonTextureOn);
+    soundButtonSprite.setScale(4.f, 4.f);
+    soundButtonSprite.setPosition(window.getSize().x - 200.f, 50.f);
+
 }
 
 void GameEngine::run() {
@@ -382,7 +423,14 @@ void GameEngine::handleEvents() {
                 return;
             }
 
+            if (soundButtonSprite.getGlobalBounds().contains(mousePos)) {
+                soundEnabled = !soundEnabled;
+                soundButtonSprite.setTexture(soundEnabled ? soundButtonTextureOn : soundButtonTextureOff);
 
+                // 🔇 Wyciszenie muzyki
+                backgroundMusic.setVolume(soundEnabled ? 40.f : 0.f);
+                return;
+            }
 
             // Kliknięcie w pole budowy
             bool clickedOnField = false;
@@ -627,6 +675,8 @@ void GameEngine::drawGame() {
     window.draw(shopButtonSprite);
     window.draw(startButtonSprite);
     window.draw(achievementsButtonSprite);
+    window.draw(soundButtonSprite);
+
 
     if (showAchievements) {
         window.draw(achievementsPanel);
@@ -661,4 +711,25 @@ void GameEngine::updateAchievementTexts() {
         y += 35.f;
         achievementTexts.push_back(txt);
     }
+}
+
+void GameEngine::playArcherShootSound() {
+    if (!soundEnabled) return;
+    shootSoundsArcher[shootIndexArcher].stop();
+    shootSoundsArcher[shootIndexArcher].play();
+    shootIndexArcher = (shootIndexArcher + 1) % shootSoundsArcher.size();
+}
+
+void GameEngine::playWizardShootSound() {
+    if (!soundEnabled) return;
+    shootSoundsWizard[shootIndexWizard].stop();
+    shootSoundsWizard[shootIndexWizard].play();
+    shootIndexWizard = (shootIndexWizard + 1) % shootSoundsWizard.size();
+}
+
+void GameEngine::playCatapultShootSound() {
+    if (!soundEnabled) return;
+    shootSoundsCatapult[shootIndexCatapult].stop();
+    shootSoundsCatapult[shootIndexCatapult].play();
+    shootIndexCatapult = (shootIndexCatapult + 1) % shootSoundsCatapult.size();
 }

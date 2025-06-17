@@ -6,7 +6,8 @@ CONFIG -= qt
 INCLUDEPATH += "C:\SFML\include"
 
 LIBS += -LC:\SFML\lib
-LIBS += -lsfml-graphics -lsfml-window -lsfml-system
+LIBS += -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio
+
 
 assets.files = $$PWD/assets/*
 assets.path = $$OUT_PWD/assets

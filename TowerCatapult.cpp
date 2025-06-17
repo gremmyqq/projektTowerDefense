@@ -1,4 +1,5 @@
 #include "TowerCatapult.h"
+#include "GameEngine.h"
 #include <cmath>
 #include <iostream>
 
@@ -29,8 +30,10 @@ void TowerCatapult::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
 
         if (dist <= range && timeSinceLastAttack >= attackCooldown) {
             arrows.emplace_back(shape.getPosition(), enemy->getPosition(), arrowTexture, 800.f);
+            if (GameEngine::instance)
+                GameEngine::instance->playCatapultShootSound();
 
-            std::cout<<"strzal\n";
+            //std::cout<<"strzal\n";
             timeSinceLastAttack = 0.f;
             break;
         }

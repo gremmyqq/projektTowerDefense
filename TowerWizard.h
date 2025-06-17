@@ -46,10 +46,10 @@ private:
     void updateAnimation(float deltaTime);
     void loadAnimation(AnimationType type);
 
-    float attackCooldown = .1f;
+    float attackCooldown = 1.f;
     float timeSinceLastAttack = 0.0f;
     float range = 200.f;
-    int damage = 5;
+    int damage = 50;
 };
 
 #endif // TOWERWIZARD_H

@@ -23,6 +23,8 @@
 #include "TowerArcher.h"
 #include "TowerWizard.h"
 #include "AchievementSystem.h"
+#include <SFML/Audio.hpp>
+
 
 enum class GameState {
     StartScreen,
@@ -57,6 +59,27 @@ public:
     sf::Sprite achievementsButtonSprite;
     sf::Texture achievementsButtonTexture;
     void updateAchievementTexts();
+
+    bool soundEnabled = true;
+
+    sf::Texture soundButtonTextureOn;
+    sf::Texture soundButtonTextureOff;
+    sf::Sprite soundButtonSprite;
+
+    sf::Music backgroundMusic;
+    sf::SoundBuffer shootBufferArcher;
+    sf::SoundBuffer shootBufferWizard;
+    sf::SoundBuffer shootBufferCatapult;
+    std::vector<sf::Sound> shootSoundsArcher;
+    std::vector<sf::Sound> shootSoundsWizard;
+    std::vector<sf::Sound> shootSoundsCatapult;
+    size_t shootIndexArcher = 0;
+    size_t shootIndexWizard = 0;
+    size_t shootIndexCatapult = 0;
+
+    void playArcherShootSound();
+    void playWizardShootSound();
+    void playCatapultShootSound();
 
 
 private:

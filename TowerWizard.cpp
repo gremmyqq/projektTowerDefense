@@ -1,4 +1,5 @@
 #include "TowerWizard.h"
+#include "GameEngine.h"
 #include <cmath>
 #include <iostream>
 
@@ -30,9 +31,11 @@ void TowerWizard::attack(std::vector<std::unique_ptr<Enemy>>& enemies) {
 
         if (dist <= range && timeSinceLastAttack >= attackCooldown) {
             arrows.emplace_back(shape.getPosition(), enemy->getPosition(), arrowTexture);
-
-
-            std::cout<<"strzal\n";
+            if (GameEngine::instance && GameEngine::instance->soundEnabled) {
+                if (GameEngine::instance)
+                    GameEngine::instance->playWizardShootSound();
+            }
+            //std::cout<<"strzal\n";
             timeSinceLastAttack = 0.f;
             break;
         }
