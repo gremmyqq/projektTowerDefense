@@ -31,7 +31,6 @@ void Shop::addItem(const std::string& name, int cost, std::function<void()> acti
     item.label.setCharacterSize(16);
     item.label.setFillColor(sf::Color::White);
     item.label.setPosition(item.button.getPosition().x + 5, item.button.getPosition().y + 8);
-
     items.push_back(item);
 }
 
