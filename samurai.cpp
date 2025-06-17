@@ -19,10 +19,10 @@ Samurai::Samurai(const sf::Vector2f& spawnPoint, const sf::Texture&)
         throw std::runtime_error("Nie można załadować tekstur Samuraja");
     }
 
-    speed = 150.f;
-    maxHp = 180;
+    speed = 300.f;
+    maxHp = 230;
     hp = maxHp;
-    damage = 50;
+    damage = 120;
     frameSize = {128, 128};
 
     switchState(SamuraiState::Idle);
@@ -138,12 +138,15 @@ void Samurai::handleMovement(float deltaTime, const sf::RenderWindow& window)
     sf::Vector2f pos = sprite.getPosition();
     sf::Vector2u winSize = window.getSize();
 
-    float margin = 20.f;
-    float topLimit = 130.f;
-    float rightLimit = winSize.x - 335.f;
-    float bottomLimit = winSize.y - margin;
+    // Ograniczenia wyrażone jako procenty (np. 5% marginesu po bokach)
+    float marginX = winSize.x * 0.005f;
+    float marginY = winSize.y * 0.04f;
+    float topLimit = winSize.y * 0.10f;
+    float rightLimit = winSize.x * 0.865f;
+    float bottomLimit = winSize.y - marginY;
 
-    pos.x = std::clamp(pos.x, margin, rightLimit);
+    // Przypnij pozycję do ograniczeń
+    pos.x = std::clamp(pos.x, marginX, rightLimit);
     pos.y = std::clamp(pos.y, topLimit, bottomLimit);
 
     sprite.setPosition(pos);

@@ -6,7 +6,7 @@
 
 EnemyRegular::EnemyRegular(const std::vector<sf::Vector2f>& path)
     : Enemy(path) {
-    maxHealth = 200;
+    maxHealth = 250;
     health = maxHealth;
     speed = 100;
 
