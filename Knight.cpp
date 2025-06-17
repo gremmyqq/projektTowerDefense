@@ -5,7 +5,7 @@
 #include <stdexcept>
 
 Knight::Knight(const sf::Vector2f& spawnPoint, const sf::Texture& texture)
-    : HeroBase(spawnPoint, sf::Texture()) {
+    : HeroBase(spawnPoint, texture) {
 
     if (!idleTex.loadFromFile("assets/Idle_KG_1.png") ||
         !walk1Tex.loadFromFile("assets/Walking_KG_1.png") ||
