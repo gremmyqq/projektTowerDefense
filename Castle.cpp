@@ -2,7 +2,7 @@
 #include <stdexcept>
 
 Castle::Castle(const sf::Vector2f& position)
-    : maxHP(500), hp(maxHP), level(1), maxLevel(5) {
+    : maxHP(1500), hp(maxHP), level(1), maxLevel(5) {
 
     if (!texture.loadFromFile("assets/castle.png")) {
         throw std::runtime_error("Nie można załadować assets/castle.png");
