@@ -7,6 +7,7 @@
 #include <memory>
 #include "Arrow.h"
 
+class GameEngine; // forward declaration
 
 
 class TowerArcher : public TowerField {
@@ -16,7 +17,7 @@ public:
     void attack(std::vector<std::unique_ptr<Enemy>>& enemies) override;
     void update(float deltaTime, std::vector<std::unique_ptr<Enemy>>& enemies) override;
     void draw(sf::RenderWindow& window) override;
-    void upgrade();
+    void upgrade(GameEngine* engine) override;
     bool contains(const sf::Vector2f& point) const override;
 
 private:

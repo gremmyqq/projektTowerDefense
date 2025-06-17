@@ -22,6 +22,8 @@
 #include "GeneratorField.h"
 #include "TowerArcher.h"
 #include "TowerWizard.h"
+#include "AchievementSystem.h"
+
 enum class GameState {
     StartScreen,
     HeroSelection,
@@ -45,6 +47,17 @@ public:
     Castle& getCastle() { return castle; }  // ← getter
 
     int* getPlayerResourcesPointer() { return &playerResources; }
+    AchievementSystem& getAchievements() { return achievements; }
+
+    bool showAchievements = false;
+    sf::RectangleShape achievementsPanel;
+    sf::Text achievementsTitle;
+    std::vector<sf::Text> achievementTexts;
+
+    sf::Sprite achievementsButtonSprite;
+    sf::Texture achievementsButtonTexture;
+    void updateAchievementTexts();
+
 
 private:
     sf::RenderWindow& window;
@@ -57,6 +70,8 @@ private:
     Shop shop;
     Shop buildShop;
     Shop upgradeShop;
+    AchievementSystem achievements;
+
 
 
     sf::Font uiFont;

@@ -1,4 +1,6 @@
 #include "TowerArcher.h"
+#include "AchievementSystem.h"
+#include "GameEngine.h"
 #include <cmath>
 #include <iostream>
 
@@ -142,10 +144,14 @@ void TowerArcher::loadAnimation(AnimationType type) {
 
 }
 
-void TowerArcher::upgrade() {
+void TowerArcher::upgrade(GameEngine* engine) {
+
     if (isUpgrading) {
         std::cout << "[INFO] Wieża już się ulepsza\n";
         return;
+    }
+    if (level == 4 && engine) {
+        engine->getAchievements().unlock(AchievementSystem::Type::TowerToLevel4);
     }
 
     if (level < maxLevel) {

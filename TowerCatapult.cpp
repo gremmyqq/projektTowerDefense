@@ -140,7 +140,7 @@ void TowerCatapult::loadAnimation(AnimationType type) {
 
 }
 
-void TowerCatapult::upgrade() {
+void TowerCatapult::upgrade(GameEngine* engine) {
     if (isUpgrading) {
         std::cout << "[INFO] Wieża już się ulepsza\n";
         return;

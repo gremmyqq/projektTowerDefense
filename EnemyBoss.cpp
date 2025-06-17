@@ -78,10 +78,9 @@ void EnemyBoss::update(float deltaTime) {
             path.back().y - position.y
             );
         if (distToEnd < 30.f && state != EnemyState::Dying) {
-            // ✅ RANIENIE ZAMKU
             GameEngine::instance->getCastle().takeDamage(200); // lub inna wartość
 
-            die();  // 🔥 pokaz animację śmierci
+            die();
         }
     }
 
@@ -137,7 +136,7 @@ void EnemyBoss::updateAnimation(float deltaTime) {
                 currentFrame = 0;
 
                 if (phase == BossPhase::Charging) {
-                    // zakończ charging → dash
+                    // zakończ charging -> dash
                     phase = BossPhase::DashingAttack;
                     phaseTimer = 0.f;
                     dashedDistance = 0.f;
