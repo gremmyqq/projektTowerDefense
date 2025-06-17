@@ -25,7 +25,8 @@ private:
     enum class AttackVariant { Type1, Type2 };
     void handleAttack(std::vector<std::unique_ptr<Enemy>>&, const sf::RenderWindow&) override;
 
-    void handleMovement(float deltaTime);
+    void handleMovement(float deltaTime, const sf::RenderWindow& window);
+
     void updateAnimation(float deltaTime);
     void switchState(SamuraiState newState);
     void updateTexture();

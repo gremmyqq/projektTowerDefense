@@ -57,7 +57,8 @@ protected:
     float dashSpeed = 400.f;
 
     // Metody wirtualne pomocnicze (dla podklas)
-    virtual void handleMovement(float deltaTime) = 0;
+    virtual void handleMovement(float deltaTime, const sf::RenderWindow& window) = 0;
+
     virtual void handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies,
                               const sf::RenderWindow& window) = 0;
     virtual void updateAnimation(float deltaTime) = 0;

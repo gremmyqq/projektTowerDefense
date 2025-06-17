@@ -56,7 +56,7 @@ private:
 
     void switchState(MageState newState);
     void updateTexture();
-    void handleMovement(float deltaTime);
+    void handleMovement(float deltaTime, const sf::RenderWindow& window);
     void handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies, const sf::RenderWindow& window);
     void updateAnimation(float deltaTime);
 };
