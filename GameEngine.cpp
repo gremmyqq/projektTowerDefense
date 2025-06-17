@@ -13,7 +13,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     : window(window),
     spawnTimer(0.f),
     spawnInterval(3.f),
-    castle(sf::Vector2f(280.f, 1080.f)) {
+    castle(sf::Vector2f(280.f, 880.f)) {
     if (!startScreenTexture.loadFromFile("assets/startscreen.jpg")) {
         throw std::runtime_error("Nie można załadować startscreen.png");
     }
