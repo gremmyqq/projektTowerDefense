@@ -74,8 +74,8 @@ protected:
 
     float attackCooldown = 1.0f;
     float attackTimer = 0.0f;
-    float attackRange = 50.0f;
-    int attackDamage = 10;
+    float attackRange = 80.0f;
+    int attackDamage = 60;
 
 
 };

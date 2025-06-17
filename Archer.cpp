@@ -7,11 +7,11 @@
 Archer::Archer(const sf::Vector2f& spawnPoint, const sf::Texture&)
     : HeroBase(spawnPoint, sf::Texture()),
     state(ArcherState::Idle),
-    attackCooldown(0.6f),
+    attackCooldown(1.f),
     attackTimer(0.f),
     attackQueued(false),
     range(300.f),
-    damage(30),
+    damage(100),
     speed(160.f),
     spawnPosition(spawnPoint){
 
@@ -142,14 +142,19 @@ void Archer::handleMovement(float deltaTime, const sf::RenderWindow& window)
     sf::Vector2f pos = sprite.getPosition();
     sf::Vector2u winSize = window.getSize();
 
-    // ograniczenia brzegów
-    float margin = 20.f;
-    float topLimit = 130.f;              // brązowy pasek u góry
-    float rightLimit = winSize.x - 335.f; // brązowy obszar po prawej
-    float bottomLimit = winSize.y - margin;
 
-    pos.x = std::clamp(pos.x, margin, rightLimit);
+
+    // Ograniczenia wyrażone jako procenty (np. 5% marginesu po bokach)
+    float marginX = winSize.x * 0.005f;
+    float marginY = winSize.y * 0.04f;
+    float topLimit = winSize.y * 0.10f;
+    float rightLimit = winSize.x * 0.865f;
+    float bottomLimit = winSize.y - marginY;
+
+    // Przypnij pozycję do ograniczeń
+    pos.x = std::clamp(pos.x, marginX, rightLimit);
     pos.y = std::clamp(pos.y, topLimit, bottomLimit);
+
 
     sprite.setPosition(pos);
 

@@ -24,11 +24,11 @@ Knight::Knight(const sf::Vector2f& spawnPoint, const sf::Texture& texture)
     sprite.setOrigin(frameSize.x / 2.f, frameSize.y / 2.f);
 
     speed = 120.f;
-    maxHp = 200;
+    maxHp = 300;
     hp = maxHp;
-    damage = 40;
+    damage = 80;
     range = 60.f;
-    attackCooldown = 0.5f;
+    attackCooldown = 0.8f;
     attackTimer = 0.f;
 }
 
@@ -157,12 +157,15 @@ void Knight::handleMovement(float deltaTime, const sf::RenderWindow& window)
      sf::Vector2f pos = sprite.getPosition();
      sf::Vector2u winSize = window.getSize();
 
-     float margin = 20.f;
-     float topLimit = 130.f;
-     float rightLimit = winSize.x - 335.f;
-     float bottomLimit = winSize.y - margin;
+     // Ograniczenia wyrażone jako procenty (np. 5% marginesu po bokach)
+     float marginX = winSize.x * 0.005f;
+     float marginY = winSize.y * 0.04f;
+     float topLimit = winSize.y * 0.10f;
+     float rightLimit = winSize.x * 0.865f;
+     float bottomLimit = winSize.y - marginY;
 
-     pos.x = std::clamp(pos.x, margin, rightLimit);
+     // Przypnij pozycję do ograniczeń
+     pos.x = std::clamp(pos.x, marginX, rightLimit);
      pos.y = std::clamp(pos.y, topLimit, bottomLimit);
 
      sprite.setPosition(pos);

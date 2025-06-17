@@ -11,7 +11,7 @@ EnemyBoss::EnemyBoss(const std::vector<sf::Vector2f>& path)
     health = maxHealth;
     speed = 100;
     attackRange = 200.f;
-    attackDamage = 1800;
+    attackDamage = 200;
 
     texture.loadFromFile("assets/enemy_boss.png");
     sprite.setTexture(texture);
