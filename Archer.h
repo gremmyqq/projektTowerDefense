@@ -57,7 +57,8 @@ private:
     float frameTime = 0.1f;
     sf::Vector2i frameSize;
 
-    void handleMovement(float deltaTime);
+    void handleMovement(float deltaTime, const sf::RenderWindow& window);
+
     void handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies, const sf::RenderWindow& window);
     void updateAnimation(float deltaTime);
     void updateTexture();

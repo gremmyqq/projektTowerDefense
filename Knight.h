@@ -50,7 +50,8 @@ protected:
 
     void switchState(KnightState newState);
     void updateTexture();
-    void handleMovement(float deltaTime) override;
+    void handleMovement(float deltaTime, const sf::RenderWindow& window) override;
+
 
 };
 

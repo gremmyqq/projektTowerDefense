@@ -39,7 +39,7 @@ void Mage::update(float deltaTime, const sf::RenderWindow& window,
         return;
     }
 
-    handleMovement(deltaTime);
+    handleMovement(deltaTime, window);
     attackTimer += deltaTime;
     handleAttack(enemies, window);
     updateHpBar();
@@ -154,8 +154,21 @@ void Mage::handleAttack(std::vector<std::unique_ptr<Enemy>>& enemies, const sf::
 }
 
 
-void Mage::handleMovement(float deltaTime) {
+void Mage::handleMovement(float deltaTime, const sf::RenderWindow& window) {
     sf::Vector2f moveDir(0.f, 0.f);
+    // ZATRZYMANIE PRZED BRĄZOWĄ STREFĄ
+    sf::Vector2f pos = sprite.getPosition();
+    sf::Vector2u winSize = window.getSize();
+
+    float margin = 25.f;
+    float topLimit = 130.f;
+    float rightLimit = winSize.x - 335.f;
+    float bottomLimit = winSize.y - margin;
+
+    pos.x = std::clamp(pos.x, margin, rightLimit);
+    pos.y = std::clamp(pos.y, topLimit, bottomLimit);
+
+    sprite.setPosition(pos);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) moveDir.y -= 1.f;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) moveDir.y += 1.f;

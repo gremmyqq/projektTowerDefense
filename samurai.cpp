@@ -36,7 +36,7 @@ void Samurai::update(float deltaTime, const sf::RenderWindow& window, std::vecto
         return;
     }
 
-    handleMovement(deltaTime);
+    handleMovement(deltaTime, window);
     attackTimer += deltaTime;
 
     if (attackQueued && attackTimer >= attackCooldown) {
@@ -107,8 +107,14 @@ void Samurai::performAttack(AttackVariant type, std::vector<std::unique_ptr<Enem
         sprite.setTexture(attack1Tex);
     else
         sprite.setTexture(attack2Tex);
+    if (type == AttackVariant::Type1) {
+        sprite.setTexture(attack1Tex);
+        frameCount = 6;  // 🔁 liczba klatek dla Attack_1
+    } else {
+        sprite.setTexture(attack2Tex);
+        frameCount = 4;  // 🔁 liczba klatek dla Attack_2
+    }
 
-    frameCount = 6;
     frameSize = {128, 128};
     sprite.setTextureRect({0, 0, frameSize.x, frameSize.y});
 
@@ -125,9 +131,22 @@ void Samurai::performAttack(AttackVariant type, std::vector<std::unique_ptr<Enem
     }
 }
 
-void Samurai::handleMovement(float deltaTime)
+void Samurai::handleMovement(float deltaTime, const sf::RenderWindow& window)
 {
     sf::Vector2f moveDir(0.f, 0.f);
+    // ZATRZYMANIE PRZED BRĄZOWĄ STREFĄ
+    sf::Vector2f pos = sprite.getPosition();
+    sf::Vector2u winSize = window.getSize();
+
+    float margin = 20.f;
+    float topLimit = 130.f;
+    float rightLimit = winSize.x - 335.f;
+    float bottomLimit = winSize.y - margin;
+
+    pos.x = std::clamp(pos.x, margin, rightLimit);
+    pos.y = std::clamp(pos.y, topLimit, bottomLimit);
+
+    sprite.setPosition(pos);
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) moveDir.y -= 1.f;
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) moveDir.y += 1.f;
@@ -153,13 +172,18 @@ void Samurai::updateAnimation(float deltaTime)
     animationTimer += deltaTime;
 
     if (animationTimer >= frameTime) {
-        if (state == SamuraiState::Dead && currentFrame < frameCount - 1)
-            currentFrame++;
-        else if (state != SamuraiState::Dead)
+        animationTimer = 0.f;
+
+        if (state == SamuraiState::Dead) {
+            // Animacja śmierci nie zapętla się
+            if (currentFrame < frameCount - 1)
+                currentFrame++;  // dojdzie do ostatniej klatki i tam zostanie
+        } else {
+            // Wszystkie inne animacje zapętlane
             currentFrame = (currentFrame + 1) % frameCount;
+        }
 
         sprite.setTextureRect({currentFrame * frameSize.x, 0, frameSize.x, frameSize.y});
-        animationTimer = 0.f;
     }
 }
 
@@ -191,7 +215,7 @@ void Samurai::updateTexture()
         return;
     case SamuraiState::Dead:
         sprite.setTexture(deathTex);
-        frameCount = 4;
+        frameCount = 3;
         break;
     case SamuraiState::Win:
         break;

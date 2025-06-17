@@ -175,7 +175,8 @@ sf::RectangleShape archerBtn, knightBtn, mageBtn;
     void drawGame();
     sf::Texture startScreenTexture;
     sf::Sprite startScreenSprite;
-
+    sf::Texture victoryScreenTexture;
+    sf::Sprite victoryScreenSprite;
     sf::Texture defeatScreenTexture;
     sf::Sprite defeatScreenSprite;
 

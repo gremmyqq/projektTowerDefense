@@ -23,6 +23,15 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         static_cast<float>(window.getSize().y) / startScreenTexture.getSize().y
         );
 
+    if (!victoryScreenTexture.loadFromFile("assets/winn.jpg")) {
+        throw std::runtime_error("Nie można załadować winn.jpg");
+    }
+    victoryScreenSprite.setTexture(victoryScreenTexture);
+    victoryScreenSprite.setScale(
+        static_cast<float>(window.getSize().x) / victoryScreenTexture.getSize().x,
+        static_cast<float>(window.getSize().y) / victoryScreenTexture.getSize().y
+        );
+
     if (!defeatScreenTexture.loadFromFile("assets/gameove.jpg")) {
         throw std::runtime_error("Nie można załadować gameover.png");
     }
@@ -84,17 +93,17 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     shop.setFont(uiFont);
     shop.setPosition({window.getSize().x-200.f, 300.f});
     shop.setGoldPointer(&playerResources);
-  // zamiast playerResources
+    // zamiast playerResources
 
 
-    shop.addItem("Ulepsz zamek", 100, [this]() {
+    shop.addItem("Upgrade Castle", 100, [this]() {
         if (castle.getLevel() < castle.getMaxLevel()) {
             castle.upgrade();
             achievements.unlock(AchievementSystem::Type::CastleUpgraded);
 
         }
     });
-    shop.addItem("Kup Rycerza", 300, [this]() {
+    shop.addItem("Buy Knight", 300, [this]() {
         if (!hero) {
             hero = std::make_unique<Knight>(sf::Vector2f(400.f, 500.f), heroTexture);
             achievements.unlock(AchievementSystem::Type::HeroBought);
@@ -102,7 +111,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    shop.addItem("Kup Łucznika", 300, [this]() {
+    shop.addItem("Buy Archer", 300, [this]() {
         if (!hero) {
             hero = std::make_unique<Archer>(sf::Vector2f(400.f, 500.f), heroTexture);
             achievements.unlock(AchievementSystem::Type::HeroBought);
@@ -110,14 +119,14 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    shop.addItem("Kup Maga", 300, [this]() {
+    shop.addItem("Buy Mage", 300, [this]() {
         if (!hero) {
             hero = std::make_unique<Mage>(sf::Vector2f(400.f, 500.f), heroTexture);
             achievements.unlock(AchievementSystem::Type::HeroBought);
 
         }
     });
-    shop.addItem("Kup Samuraia", 300, [this]() {
+    shop.addItem("Buy Samurai", 300, [this]() {
         if (!hero) {
             hero = std::make_unique<Samurai>(sf::Vector2f(400.f, 500.f), heroTexture);
             achievements.unlock(AchievementSystem::Type::HeroBought);
@@ -125,7 +134,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
         }
     });
 
-    shop.addItem("Ulepsz bohatera", 200, [this]() {
+    shop.addItem("Upgrade Hero", 200, [this]() {
         if (hero) {
             hero->upgrade();  // dodaj tę metodę do Knight/Archer/Mage
         }
@@ -433,34 +442,45 @@ void GameEngine::handleEvents() {
             }
 
             // Kliknięcie w pole budowy
+            // Kliknięcie w pole budowy
             bool clickedOnField = false;
-            upgradeShop.toggleVisible(false);
-            buildShop.toggleVisible(false);
 
             for (auto& field : fields) {
                 if (field->contains(mousePos)) {
-                    selectedField = field.get();
                     clickedOnField = true;
 
-
-                    upgradeShop.toggleVisible(false);
-                    buildShop.toggleVisible(false);
-
-                    if (dynamic_cast<EmptyField*>(selectedField)) {
-                        buildShop.toggleVisible(true);
-                        upgradeShop.toggleVisible(false);
-                    } else if (dynamic_cast<TowerField*>(selectedField)) {
+                    // Jeśli kliknięto to samo pole co poprzednio — zamknij sklep i odznacz
+                    if (selectedField == field.get()) {
+                        selectedField = nullptr;
                         buildShop.toggleVisible(false);
-                        upgradeShop.toggleVisible(true);
+                        upgradeShop.toggleVisible(false);
                     } else {
+                        selectedField = field.get();
+
+                        // Ukryj oba sklepy na wszelki wypadek
                         buildShop.toggleVisible(false);
                         upgradeShop.toggleVisible(false);
-                    }
 
+                        if (dynamic_cast<EmptyField*>(selectedField)) {
+                            buildShop.toggleVisible(true);
+                        } else if (dynamic_cast<TowerField*>(selectedField)) {
+                            upgradeShop.toggleVisible(true);
+                        }
+                    }
 
                     break;
                 }
             }
+
+            if (!clickedOnField) {
+                selectedField = nullptr;
+                buildShop.toggleVisible(false);
+                upgradeShop.toggleVisible(false);
+                shop.toggleVisible(false);
+            }
+
+
+
 
             if (!clickedOnField) {
                 selectedField = nullptr;
@@ -626,9 +646,11 @@ void GameEngine::drawStartScreen() {
 }
 
 void GameEngine::drawVictoryScreen() {
-    sf::Text text("Wygrałeś!", uiFont, 50);
+    window.draw(victoryScreenSprite);
+
+    sf::Text text("WYGRALES!", uiFont, 50);
     text.setPosition(400.f, 300.f);
-    text.setFillColor(sf::Color::Green);
+    text.setFillColor(sf::Color::Yellow);
     window.draw(text);
 }
 
@@ -652,8 +674,6 @@ void GameEngine::drawGame() {
     if (hero)
         hero->draw(window);
 
-    if (selectedField)
-        shop.draw(window);
 
     if (shop.isVisible())
         shop.draw(window);
