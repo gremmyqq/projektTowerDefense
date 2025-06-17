@@ -74,28 +74,38 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     shop.addItem("Ulepsz zamek", 100, [this]() {
         if (castle.getLevel() < castle.getMaxLevel()) {
             castle.upgrade();
+            achievements.unlock(AchievementSystem::Type::CastleUpgraded);
+
         }
     });
     shop.addItem("Kup Rycerza", 300, [this]() {
         if (!hero) {
             hero = std::make_unique<Knight>(sf::Vector2f(400.f, 500.f), heroTexture);
+            achievements.unlock(AchievementSystem::Type::HeroBought);
+
         }
     });
 
     shop.addItem("Kup Łucznika", 300, [this]() {
         if (!hero) {
             hero = std::make_unique<Archer>(sf::Vector2f(400.f, 500.f), heroTexture);
+            achievements.unlock(AchievementSystem::Type::HeroBought);
+
         }
     });
 
     shop.addItem("Kup Maga", 300, [this]() {
         if (!hero) {
             hero = std::make_unique<Mage>(sf::Vector2f(400.f, 500.f), heroTexture);
+            achievements.unlock(AchievementSystem::Type::HeroBought);
+
         }
     });
     shop.addItem("Kup Samuraia", 300, [this]() {
         if (!hero) {
             hero = std::make_unique<Samurai>(sf::Vector2f(400.f, 500.f), heroTexture);
+            achievements.unlock(AchievementSystem::Type::HeroBought);
+
         }
     });
 
@@ -155,7 +165,7 @@ GameEngine::GameEngine(sf::RenderWindow& window)
     upgradeShop.addItem("Ulepsz wieżę", 200, [this]() {
         if (selectedField) {
             if (auto* tower = dynamic_cast<TowerField*>(selectedField)) {
-                tower->upgrade();
+                tower->upgrade(this);
                 selectedField = nullptr;
                 upgradeShop.toggleVisible(false);
             }
@@ -432,9 +442,20 @@ void GameEngine::update(float deltaTime) {
     enemies.erase(std::remove_if(enemies.begin(), enemies.end(),
                                  [this](const std::unique_ptr<Enemy>& e) {
                                      if (e->markedForDeletion) {
+                                            if (!achievements.isUnlocked(AchievementSystem::Type::FirstKill)) {
+                                            achievements.unlock(AchievementSystem::Type::FirstKill);
+                                            std::cout << "[ACHIEVEMENT] Pierwszy wróg pokonany!\n";
+                                         }
                                          playerResources += 30;  // 💰 złoto za zabicie
                                          return true;
                                      }
+
+                                     if (dynamic_cast<EnemyBoss*>(e.get()) &&
+                                         !achievements.isUnlocked(AchievementSystem::Type::BossKilled)) {
+                                         achievements.unlock(AchievementSystem::Type::BossKilled);
+                                         std::cout << "[ACHIEVEMENT] Pokonałeś bossa!\n";
+                                     }
+
                                      return e->reachedEnd();
                                  }), enemies.end());
 

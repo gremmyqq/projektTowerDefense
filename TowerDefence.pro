@@ -13,6 +13,7 @@ assets.path = $$OUT_PWD/assets
 INSTALLS += assets
 
 SOURCES += \
+        AchievementSystem.cpp \
         Archer.cpp \
         Castle.cpp \
         EmptyField.cpp \
@@ -39,6 +40,7 @@ SOURCES += \
         spell.cpp
 
 HEADERS += \
+        AchievementSystem.h \
         Archer.h \
         BuildType.h \
         Castle.h \

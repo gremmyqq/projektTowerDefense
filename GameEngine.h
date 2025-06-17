@@ -22,6 +22,8 @@
 #include "GeneratorField.h"
 #include "TowerArcher.h"
 #include "TowerWizard.h"
+#include "AchievementSystem.h"
+
 
 class GameEngine {
 public:
@@ -37,6 +39,7 @@ public:
     Castle& getCastle() { return castle; }  // ← getter
 
     int* getPlayerResourcesPointer() { return &playerResources; }
+    AchievementSystem& getAchievements() { return achievements; }
 
 private:
     sf::RenderWindow& window;
@@ -49,6 +52,8 @@ private:
     Shop shop;
     Shop buildShop;
     Shop upgradeShop;
+    AchievementSystem achievements;
+
 
 
     sf::Font uiFont;

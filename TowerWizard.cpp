@@ -142,7 +142,7 @@ void TowerWizard::loadAnimation(AnimationType type) {
 
 }
 
-void TowerWizard::upgrade() {
+void TowerWizard::upgrade(GameEngine* engine) {
     if (isUpgrading) {
         std::cout << "[INFO] Wieża już się ulepsza\n";
         return;
