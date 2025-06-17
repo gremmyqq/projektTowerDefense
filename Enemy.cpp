@@ -56,7 +56,7 @@ void Enemy::setPosition(sf::Vector2f newPos) {
 }
 
 void Enemy::moveTowardsTarget(float deltaTime) {
-    if (state == EnemyState::Attacking || state == EnemyState::Dying) return; // 🚫 Nie ruszaj się w tych stanach
+    if (state == EnemyState::Attacking || state == EnemyState::Dying) return;
 
     if (currentTargetIndex >= path.size()) return;
 
@@ -77,11 +77,24 @@ void Enemy::moveTowardsTarget(float deltaTime) {
 void Enemy::updateSpriteDirection(const sf::Vector2f& dir) {
     float angle = std::atan2(dir.y, dir.x) * 180 / 3.14159f;
 
-    if (angle >= -45 && angle <= 45) direction = 2;         // prawo
-    else if (angle > 45 && angle < 135) direction = 0;      // dół
-    else if (angle >= 135 || angle <= -135) direction = 2;  // lewo
-    else direction = 1;                                     // góra
+    if (angle >= -45 && angle <= 45) {
+        direction = 2;  // prawo
+        sprite.setScale(-std::abs(sprite.getScale().x), sprite.getScale().y);  // ← odbicie
+    }
+    else if (angle > 45 && angle < 135) {
+        direction = 0;  // dół
+        sprite.setScale(std::abs(sprite.getScale().x), sprite.getScale().y);
+    }
+    else if (angle >= 135 || angle <= -135) {
+        direction = 2;  // lewo
+        sprite.setScale(std::abs(sprite.getScale().x), sprite.getScale().y);  // ← normalnie
+    }
+    else {
+        direction = 1;  // góra
+        sprite.setScale(std::abs(sprite.getScale().x), sprite.getScale().y);
+    }
 }
+
 
 void Enemy::updateAnimation(float deltaTime) {
     animationTimer += deltaTime;
