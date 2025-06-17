@@ -81,8 +81,27 @@ GameEngine::GameEngine(sf::RenderWindow& window)
 
     uiFont.loadFromFile("assets/arial.ttf");
 
+    achievementsPanel.setSize({400.f, 300.f});
+    achievementsPanel.setFillColor(sf::Color(0, 0, 0, 200));
+    achievementsPanel.setPosition(300.f, 200.f);
+
+    if (!achievementsButtonTexture.loadFromFile("assets/AchiButton.png")) {
+        throw std::runtime_error("Nie można załadować assets/trophy.png");
+    }
+    achievementsButtonSprite.setTexture(achievementsButtonTexture);
+    achievementsButtonSprite.setScale(4.0f, 4.0f);
+    achievementsButtonSprite.setPosition(window.getSize().x - 100.f, 50.f);
+
+
+    achievementsTitle.setFont(uiFont);
+    achievementsTitle.setString("Osiągnięcia");
+    achievementsTitle.setCharacterSize(28);
+    achievementsTitle.setFillColor(sf::Color::Yellow);
+    achievementsTitle.setPosition(achievementsPanel.getPosition().x + 100, achievementsPanel.getPosition().y + 10);
+
+
     shop.setFont(uiFont);
-    shop.setPosition({20.f, 500.f});
+    shop.setPosition({window.getSize().x-200.f, 300.f});
     shop.setGoldPointer(&playerResources);
   // zamiast playerResources
 
@@ -357,6 +376,13 @@ void GameEngine::handleEvents() {
                 return;
             }
 
+            if (achievementsButtonSprite.getGlobalBounds().contains(mousePos)) {
+                showAchievements = true;
+                updateAchievementTexts(); // funkcja tworzy teksty na podstawie stanu osiągnięć
+                return;
+            }
+
+
 
             // Kliknięcie w pole budowy
             bool clickedOnField = false;
@@ -397,6 +423,11 @@ void GameEngine::handleEvents() {
 
             shop.handleClick(mousePos);
         }
+        if (event.key.code == sf::Keyboard::Space && showAchievements) {
+            showAchievements = false;
+            return;
+        }
+
     }
 }
 
@@ -595,5 +626,39 @@ void GameEngine::drawGame() {
     window.draw(goldText);
     window.draw(shopButtonSprite);
     window.draw(startButtonSprite);
+    window.draw(achievementsButtonSprite);
+
+    if (showAchievements) {
+        window.draw(achievementsPanel);
+        window.draw(achievementsTitle);
+        for (auto& txt : achievementTexts) {
+            window.draw(txt);
+        }
+    }
+
 }
 
+void GameEngine::updateAchievementTexts() {
+    achievementTexts.clear();
+
+    std::vector<std::pair<std::string, AchievementSystem::Type>> list = {
+        {"Zabito pierwszego wroga", AchievementSystem::Type::FirstKill},
+        {"Kupiono bohatera", AchievementSystem::Type::HeroBought},
+        {"Ulepszono zamek", AchievementSystem::Type::CastleUpgraded},
+        {"Wieża osiągnęła poziom 4", AchievementSystem::Type::TowerToLevel4},
+        {"Pokonano bossa", AchievementSystem::Type::BossKilled}
+    };
+
+    float y = achievementsPanel.getPosition().y + 60.f;
+
+    for (auto& [desc, type] : list) {
+        sf::Text txt;
+        txt.setFont(uiFont);
+        txt.setCharacterSize(20);
+        txt.setFillColor(achievements.isUnlocked(type) ? sf::Color::Green : sf::Color(150, 150, 150));
+        txt.setString((achievements.isUnlocked(type) ? "✓ " : "✗ ") + desc);
+        txt.setPosition(achievementsPanel.getPosition().x + 30.f, y);
+        y += 35.f;
+        achievementTexts.push_back(txt);
+    }
+}

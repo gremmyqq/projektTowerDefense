@@ -12,7 +12,7 @@ public:
     void draw(sf::RenderWindow& window) override;
     bool contains(const sf::Vector2f& point) const override;
     void handleClick(BuildType, GameEngine&) override;
-    virtual void upgrade(GameEngine* engine) {}
+    virtual void upgrade(GameEngine* engine) = 0;
 
 
 protected:

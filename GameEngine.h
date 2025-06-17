@@ -49,6 +49,16 @@ public:
     int* getPlayerResourcesPointer() { return &playerResources; }
     AchievementSystem& getAchievements() { return achievements; }
 
+    bool showAchievements = false;
+    sf::RectangleShape achievementsPanel;
+    sf::Text achievementsTitle;
+    std::vector<sf::Text> achievementTexts;
+
+    sf::Sprite achievementsButtonSprite;
+    sf::Texture achievementsButtonTexture;
+    void updateAchievementTexts();
+
+
 private:
     sf::RenderWindow& window;
 
